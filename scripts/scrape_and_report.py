@@ -475,6 +475,51 @@ def git_push(week_label):
     print("✓ Pushed to GitHub → Cloudflare deploy triggered")
 
 
+# ── Instagram post scraping + AI scoring ─────────────────────────────────────
+def scrape_and_score_posts():
+    """
+    Run the Instagram post scraper and AI scorer.
+    Requires: data/ig_cookies.json (run scrape_ig_posts.py --save-cookies once)
+              ANTHROPIC_API_KEY environment variable
+    """
+    scripts_dir = Path(__file__).parent
+    api_key     = os.environ.get("ANTHROPIC_API_KEY", "")
+    cookie_file = Path(__file__).parent.parent / "data" / "ig_cookies.json"
+
+    if not cookie_file.exists():
+        print("⚠ No Instagram cookies found — skipping post scrape.")
+        print("  Run: python scripts/scrape_ig_posts.py --save-cookies")
+        return False
+
+    if not api_key:
+        print("⚠ ANTHROPIC_API_KEY not set — skipping AI content scoring.")
+        return False
+
+    # 1. Scrape posts
+    print("\nScraping Instagram posts...")
+    r = subprocess.run(
+        [sys.executable, str(scripts_dir / "scrape_ig_posts.py")],
+        capture_output=True, text=True
+    )
+    if r.returncode != 0:
+        print(f"⚠ Post scrape failed: {r.stderr.strip()[:200]}")
+        return False
+    print(r.stdout.strip())
+
+    # 2. Score posts via Claude API
+    print("\nScoring posts via Claude API...")
+    env = {**os.environ, "ANTHROPIC_API_KEY": api_key}
+    r = subprocess.run(
+        [sys.executable, str(scripts_dir / "score_posts.py")],
+        capture_output=True, text=True, env=env
+    )
+    if r.returncode != 0:
+        print(f"⚠ Scoring failed: {r.stderr.strip()[:200]}")
+        return False
+    print(r.stdout.strip())
+    return True
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     print("=" * 60)
@@ -483,14 +528,20 @@ def main():
     week_start, week_end = get_week_range()
     print(f"Period: {fmt_date(week_start)} – {fmt_date(week_end)}\n")
 
-    print(f"Scraping {len(ACCOUNTS)} Instagram accounts...")
+    # Step 1: Scrape Meta Business Suite analytics
+    print(f"Scraping {len(ACCOUNTS)} Instagram accounts from Meta Business Suite...")
     account_data = scrape_all_accounts()
 
+    # Step 2: Scrape post captions + score them (requires cookies + API key)
+    scrape_and_score_posts()
+
+    # Step 3: Build report (picks up scores automatically if present)
     print("\nBuilding report...")
     html, week_label = build_report(account_data)
     fname = save_report(html, week_label)
     update_index(fname, week_label, account_data)
 
+    # Step 4: Push to GitHub → Cloudflare
     print("\nPushing to GitHub...")
     git_push(week_label)
 

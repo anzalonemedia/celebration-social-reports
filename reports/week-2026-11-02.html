@@ -978,7 +978,7 @@ main {
 
     <div class="report-eyebrow" id="tf-eyebrow">28-Day Performance · Oct 12 – Nov 8, 2026</div>
     <h1 class="report-title">November 2, 2026 – November 8, 2026</h1>
-    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 4:25 PM · 6 of 6 accounts</div>
+    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 4:35 PM · 6 of 6 accounts</div>
 
     <div class="header-stats">
       <div class="header-stat">
@@ -1165,15 +1165,11 @@ main {
         <div class="score-hero">
           <div style="display:flex;flex-direction:column;gap:0.25rem">
             <div class="score-num" style="font-size:3.5rem">4.24%<span class="score-denom" style="font-size:1.2rem"> eng.</span></div>
-            <div style="font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Network Avg · 28d</div>
+            <div style="font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Distribution Health · 28d</div>
           </div>
           <div class="score-hero-text">
-            <h2>Distribution Health · November 2, 2026 – November 8, 2026</h2>
-            <p>3 of 6 accounts published zero feed posts this period. 94% of total reach came from non-followers — content is finding new audiences.
-            233.1K non-follower accounts reached across the network.
-            Net new followers: +775.
-            <strong style="color:rgba(255,255,255,0.5);font-weight:400;font-size:0.78rem;display:block;margin-top:0.5rem">
-            Content quality scoring requires reading posts — coming Monday with the full automated scraper.</strong></p>
+            <h2>Week of November 2, 2026 – November 8, 2026</h2>
+            <p>3 of 6 accounts published zero feed posts. 94% of total reach came from non-followers — content is finding new audiences. 233.1K non-follower accounts reached. Net new followers: +775. <em style='opacity:.6'>Content quality score runs Monday after Instagram scrape.</em></p>
           </div>
         </div>
         <div class="score-cols">
@@ -1200,6 +1196,11 @@ main {
               <span class="score-icon">🔁</span>
               <div class="score-item-text"><strong>Only 50% of accounts posting to feeds</strong><span>Consistent weekly feed posts from every campus account would compound reach week over week.</span></div>
             </div></div>
+        </div>
+        <div class="score-col" style="border-radius:12px">
+          <h3 style="color:var(--fg-muted);margin-bottom:1rem">Values &amp; Mission Check</h3>
+          <div class="score-item"><span class="score-icon">⏳</span>
+          <div class="score-item-text"><strong>Values check</strong><span>Requires post scraping — runs Monday automatically.</span></div></div>
         </div>
         <div>
           <div class="section-label" style="margin-bottom:0.75rem">Account Scores</div>
@@ -1259,8 +1260,9 @@ main {
           <div class="acct-score-num" style="color:#a5c2c0">6/10</div>
         </div></div>
           <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:0.75rem;font-weight:300">
-            Distribution health scores only — engagement rate, non-follower reach %, posting activity, follower growth.
-            Content quality scoring (rubric-based, values-checked) will run automatically once the Instagram scraper is live.
+            Content scores: 5-question rubric × 2 pts each = 10 pts max (Motivating 8–10, Informing 5–7, Noise 0–4).
+            Rubric: scroll-stopper · one clear message · points to Christ/Church/Calling · door open to newcomers · clear next step.
+            Scored automatically via Claude API from scraped post captions. Run <code>scrape_ig_posts.py</code> then <code>score_posts.py</code> first.
           </p>
         </div>
       </div>

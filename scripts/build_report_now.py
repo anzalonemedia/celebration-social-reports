@@ -196,10 +196,25 @@ def get_week_range():
 
 def fmt_date(d): return d.strftime("%B %-d, %Y")
 
+def load_content_scores(week_start):
+    """Load AI content scores if available for this week."""
+    scores_file = REPO_DIR / "data" / f"scores_{week_start.strftime('%Y-%m-%d')}.json"
+    if scores_file.exists():
+        try:
+            data = json.loads(scores_file.read_text())
+            print(f"✓ Loaded content scores from {scores_file.name}")
+            return data
+        except Exception as e:
+            print(f"⚠ Could not load scores: {e}")
+    return None
+
 def build():
     week_start, week_end = get_week_range()
     week_label   = f"{fmt_date(week_start)} – {fmt_date(week_end)}"
     generated_at = datetime.now().strftime("%B %-d, %Y at %-I:%M %p")
+
+    # Load AI content scores if scraped this week
+    content_scores = load_content_scores(week_start)
 
     scraped = [a for a in ACCOUNT_DATA if not a.get("error")]
     total_impressions = sum(a["impressions"] for a in scraped)
@@ -405,11 +420,34 @@ def build():
         panel_id = a["handle"].replace("@","").replace(".","_")
         account_tab_nav += f'<button class="top-tab-btn" data-top="{panel_id}" style="--campus:{campus_color}">{a["handle"]}</button>\n'
 
-        # Per-account AI insight block
+        # Per-account AI insight block — merge analytics insight with content scores
         insight = account_insight(a, ACCOUNT_DATA)
-        wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in insight["wins"])
-        fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in insight["fixes"])
-        score_display = "—"  # content quality score requires post scraping; pending
+
+        # Pull content score data for this account if available
+        cs_acct = None
+        if content_scores:
+            cs_acct = next((x for x in content_scores["network"]["accounts"] if x["handle"] == a["handle"]), None)
+
+        if cs_acct and cs_acct.get("avg_score") is not None:
+            score_display = f"{cs_acct['avg_score']}/10"
+            cs_label      = cs_acct.get("category", "")
+            # Prepend content insight wins/fixes
+            cs_wins, cs_fixes = [], []
+            tp = cs_acct.get("top_post")
+            wp = cs_acct.get("weak_post")
+            if tp:
+                cs_wins.append(f"Best post scored <strong>{tp['total']}/10</strong> — {tp.get('one_line','')}. {tp.get('likes',0)}♥ {tp.get('comments',0)}💬")
+            if cs_acct.get("values_seen"):
+                cs_wins.append(f"Values clearly present: {', '.join(cs_acct['values_seen'][:3])}")
+            if wp and wp["total"] < 5:
+                cs_fixes.append(f"Weakest post scored {wp['total']}/10 — {wp.get('one_line','')}")
+            wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in (cs_wins + insight["wins"])[:3])
+            fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in (cs_fixes + insight["fixes"])[:3])
+        else:
+            score_display = "—"
+            cs_label      = "Content score pending scrape"
+            wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in insight["wins"])
+            fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in insight["fixes"])
 
         # 7-day values for display (show alongside 28-day on the card)
         d7_views_disp = fmt_num(a.get("d7_views", 0)) if a.get("d7_views") else "—"
@@ -584,31 +622,70 @@ def build():
           <div class="acct-score-num" style="color:{bar_col}">{s}/10</div>
         </div>"""
 
+    # Content score hero data
+    if content_scores and content_scores["network"].get("network_avg") is not None:
+        cn = content_scores["network"]
+        hero_score     = f"{cn['network_avg']}"
+        hero_denom     = "/10"
+        hero_sublabel  = f"Content Score · {cn['total_posts']} posts scored"
+        cats           = cn.get("category_breakdown", {})
+        hero_body      = (
+            f"{cats.get('Motivating',0)} Motivating · {cats.get('Informing',0)} Informing · {cats.get('Noise',0)} Noise. "
+            f"{posting_flag}. {nf_flag}. Network engagement rate: {avg_eng_rate}%."
+        )
+        # Values check block from real data
+        all_seven = [
+            "Jesus is our Pursuit", "Scripture is our Authority", "The Holy Spirit is our Power",
+            "People are our Heart", "Service is our Privilege", "Generosity is our Lifestyle",
+            "Flourishing is our Goal"
+        ]
+        vc = cn.get("values_check", {})
+        values_rows = ""
+        for v in all_seven:
+            count = vc.get(v, 0)
+            icon  = "✅" if count >= 2 else ("🟡" if count == 1 else "❌")
+            note  = f"{count} post{'s' if count!=1 else ''}" if count else "Not seen this week"
+            values_rows += f"""<div class="score-item">
+              <span class="score-icon">{icon}</span>
+              <div class="score-item-text"><strong>{v}</strong><span>— {note}</span></div>
+            </div>"""
+    else:
+        hero_score    = f"{avg_eng_rate}%"
+        hero_denom    = " eng."
+        hero_sublabel = "Distribution Health · 28d"
+        hero_body     = (f"{posting_flag}. {nf_flag}. "
+                         f"{fmt_num(total_nf_reach)} non-follower accounts reached. "
+                         f"Net new followers: {delta_str(net_followers)}. "
+                         "<em style='opacity:.6'>Content quality score runs Monday after Instagram scrape.</em>")
+        values_rows = """<div class="score-item"><span class="score-icon">⏳</span>
+          <div class="score-item-text"><strong>Values check</strong><span>Requires post scraping — runs Monday automatically.</span></div></div>"""
+
     scoring_panel = f"""<div class="scoring-panel">
         <div class="score-hero">
           <div style="display:flex;flex-direction:column;gap:0.25rem">
-            <div class="score-num" style="font-size:3.5rem">{avg_eng_rate}%<span class="score-denom" style="font-size:1.2rem"> eng.</span></div>
-            <div style="font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Network Avg · 28d</div>
+            <div class="score-num" style="font-size:3.5rem">{hero_score}<span class="score-denom" style="font-size:1.2rem">{hero_denom}</span></div>
+            <div style="font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">{hero_sublabel}</div>
           </div>
           <div class="score-hero-text">
-            <h2>Distribution Health · {week_label}</h2>
-            <p>{posting_flag} this period. {nf_flag}.
-            {fmt_num(total_nf_reach)} non-follower accounts reached across the network.
-            Net new followers: {delta_str(net_followers)}.
-            <strong style="color:rgba(255,255,255,0.5);font-weight:400;font-size:0.78rem;display:block;margin-top:0.5rem">
-            Content quality scoring requires reading posts — coming Monday with the full automated scraper.</strong></p>
+            <h2>Week of {week_label}</h2>
+            <p>{hero_body}</p>
           </div>
         </div>
         <div class="score-cols">
           <div class="score-col wins"><h3>✅ What's working</h3>{wins_html}</div>
           <div class="score-col fixes"><h3>🔧 Address this week</h3>{fixes_html}</div>
         </div>
+        <div class="score-col" style="border-radius:12px">
+          <h3 style="color:var(--fg-muted);margin-bottom:1rem">Values &amp; Mission Check</h3>
+          {values_rows}
+        </div>
         <div>
           <div class="section-label" style="margin-bottom:0.75rem">Account Scores</div>
           <div class="acct-scores-grid">{acct_score_cells}</div>
           <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:0.75rem;font-weight:300">
-            Distribution health scores only — engagement rate, non-follower reach %, posting activity, follower growth.
-            Content quality scoring (rubric-based, values-checked) will run automatically once the Instagram scraper is live.
+            Content scores: 5-question rubric × 2 pts each = 10 pts max (Motivating 8–10, Informing 5–7, Noise 0–4).
+            Rubric: scroll-stopper · one clear message · points to Christ/Church/Calling · door open to newcomers · clear next step.
+            Scored automatically via Claude API from scraped post captions. Run <code>scrape_ig_posts.py</code> then <code>score_posts.py</code> first.
           </p>
         </div>
       </div>"""
