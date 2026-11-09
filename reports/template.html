@@ -633,6 +633,54 @@ main {
 }
 .top-post-link:hover { text-decoration: underline; }
 
+/* ── AI SUMMARY CARD ──────────────────────────────────────────────────────── */
+.ai-summary-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 2.5rem;
+}
+@media (max-width: 700px) { .ai-summary-card { grid-template-columns: 1fr; } }
+
+.ai-summary-block { display: flex; flex-direction: column; gap: 0.5rem; }
+.ai-summary-block h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--fg);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.ai-summary-block h3 .dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  background: var(--blue);
+}
+.ai-summary-block p {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--fg-muted);
+  font-weight: 300;
+}
+.ai-summary-block p strong { color: var(--fg); font-weight: 500; }
+.ai-summary-block .ai-tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+  margin-right: 0.3rem;
+}
+.ai-summary-block .ai-tag.orange { background: var(--orange); }
+.ai-summary-block .ai-tag.yellow { background: #9a9433; }
+.ai-summary-block .ai-tag.green  { background: var(--olive); }
+
 /* ── PRINT / PDF EXPORT — data-only, one sheet ────────────────────────────── */
 @media print {
   @page { size: A4 landscape; margin: 10mm 12mm; }
@@ -842,6 +890,12 @@ main {
         <div class="tile-delta {{FOLLOW_DELTA_CLASS}}">across all accounts</div>
       </div>
     </div>
+  </section>
+
+  <!-- AI Summary -->
+  <section id="ai-summary">
+    <div class="section-label">AI Weekly Summary</div>
+    <div class="ai-summary-card">{{AI_SUMMARY}}</div>
   </section>
 
   <!-- Views bar chart -->
