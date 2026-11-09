@@ -400,11 +400,11 @@ def build():
         nf_display = delta_str(nf) if nf is not None else "—"
         nf_class   = delta_class(nf) if nf is not None else "neutral"
 
-        # Tab nav button
+        # Top-level tab nav button (data-top= drives the top panel switcher)
         sc = account_score(a)
         is_first = (a == ACCOUNT_DATA[0])
         panel_id = a["handle"].replace("@","").replace(".","_")
-        account_tab_nav += f'<button class="acct-tab-btn{" active" if is_first else ""}" data-panel="{panel_id}" style="--campus:{campus_color}">{a["handle"]} · {sc}/10</button>\n'
+        account_tab_nav += f'<button class="top-tab-btn" data-top="{panel_id}" style="--campus:{campus_color}">{a["handle"]} · {sc}/10</button>\n'
 
         # Per-account AI insight block
         insight = account_insight(a, ACCOUNT_DATA)
@@ -486,13 +486,12 @@ def build():
           </div>
         </div>"""
 
-        account_panels += f"""<div class="acct-panel{' active' if is_first else ''}" id="panel-{panel_id}">
-        {card_html}
-        {insight_html}
+        account_panels += f"""<div class="top-panel" id="top-{panel_id}">
+        <div style="display:flex;flex-direction:column;gap:1.25rem">
+          {card_html}
+          {insight_html}
+        </div>
       </div>"""
-
-    # Add scoring tab button
-    account_tab_nav += '<button class="acct-tab-btn scoring-btn" data-panel="scoring">⭐ Scoring</button>\n'
 
     # ── Auto-generated scoring panel ─────────────────────────────────────────
     scores = [(a, account_score(a)) for a in ACCOUNT_DATA]
@@ -578,8 +577,7 @@ def build():
           <div class="acct-score-num" style="color:{bar_col}">{s}/10</div>
         </div>"""
 
-    scoring_panel = f"""<div class="acct-panel" id="panel-scoring">
-      <div class="scoring-panel">
+    scoring_panel = f"""<div class="scoring-panel">
         <div class="score-hero">
           <div><div class="score-num">{net_score}<span class="score-denom">/10</span></div></div>
           <div class="score-hero-text">
@@ -600,10 +598,7 @@ def build():
             Score (0–10) = engagement rate + non-follower reach % + posting activity + follower growth. Generated automatically from Meta Business Suite analytics.
           </p>
         </div>
-      </div>
-    </div>"""
-
-    account_panels += scoring_panel
+      </div>"""
 
     period_label = "Oct 12 – Nov 8, 2026"
 
@@ -752,6 +747,7 @@ def build():
         .replace("{{REACH_BARS}}",       reach_bars) \
         .replace("{{ACCOUNT_TAB_NAV}}",  account_tab_nav) \
         .replace("{{ACCOUNT_PANELS}}",   account_panels) \
+        .replace("{{SCORING_PANEL}}",    scoring_panel) \
         .replace("{{ACCOUNT_CARDS}}",    "") \
         .replace("{{AI_SUMMARY}}",       ai_summary) \
         .replace("TIMEFRAME_DATA",       json.dumps(tf_data))
