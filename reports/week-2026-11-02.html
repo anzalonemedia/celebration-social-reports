@@ -380,7 +380,14 @@ main {
 }
 
 /* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
-.accounts-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+.accounts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 700px) {
+  .accounts-grid { grid-template-columns: 1fr; }
+}
 
 .account-card {
   --campus: var(--blue);
@@ -757,7 +764,7 @@ main {
 
     <div class="report-eyebrow" id="tf-eyebrow">28-Day Performance · Oct 12 – Nov 8, 2026</div>
     <h1 class="report-title">November 2, 2026 – November 8, 2026</h1>
-    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 3:55 PM · 6 of 6 accounts</div>
+    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 4:00 PM · 6 of 6 accounts</div>
 
     <div class="header-stats">
       <div class="header-stat">
@@ -769,12 +776,12 @@ main {
         <div class="stat-label">Interactions</div>
       </div>
       <div class="header-stat">
-        <div class="stat-num accent" data-metric="net_followers">+775</div>
-        <div class="stat-label">Net Followers</div>
+        <div class="stat-num accent">4.24%</div>
+        <div class="stat-label">Avg Eng. Rate</div>
       </div>
       <div class="header-stat">
-        <div class="stat-num" data-metric="total_posts">114</div>
-        <div class="stat-label">Posts &amp; Stories</div>
+        <div class="stat-num">+775</div>
+        <div class="stat-label">Net Followers · 28d</div>
       </div>
     </div>
   </div>

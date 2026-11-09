@@ -380,7 +380,14 @@ main {
 }
 
 /* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
-.accounts-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+.accounts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 700px) {
+  .accounts-grid { grid-template-columns: 1fr; }
+}
 
 .account-card {
   --campus: var(--blue);
@@ -769,12 +776,12 @@ main {
         <div class="stat-label">Interactions</div>
       </div>
       <div class="header-stat">
-        <div class="stat-num accent" data-metric="net_followers">{{NET_FOLLOWERS}}</div>
-        <div class="stat-label">Net Followers</div>
+        <div class="stat-num accent">{{AVG_ENG_RATE}}%</div>
+        <div class="stat-label">Avg Eng. Rate</div>
       </div>
       <div class="header-stat">
-        <div class="stat-num" data-metric="total_posts">{{TOTAL_POSTS}}</div>
-        <div class="stat-label">Posts &amp; Stories</div>
+        <div class="stat-num">{{NET_FOLLOWERS}}</div>
+        <div class="stat-label">Net Followers · 28d</div>
       </div>
     </div>
   </div>
