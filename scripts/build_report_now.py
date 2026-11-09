@@ -209,13 +209,8 @@ def build():
     net_followers     = sum(a["new_followers"] for a in scraped)
     avg_eng_rate      = round((total_engagement / total_impressions * 100) if total_impressions else 0, 2)
 
-    best_post_reach, best_post_account, best_post_url = 0, "", ""
-    for a in ACCOUNT_DATA:
-        tp = a.get("top_post") or {}
-        if tp.get("reach", 0) > best_post_reach:
-            best_post_reach   = tp["reach"]
-            best_post_account = a["name"]
-            best_post_url     = tp.get("url", "")
+    # Total non-follower reach across all accounts
+    total_nf_reach = sum(a.get("reach_nonfollowers", 0) for a in scraped)
 
     # Bars
     max_r = max((a["impressions"] for a in ACCOUNT_DATA), default=1) or 1
@@ -250,26 +245,7 @@ def build():
 
         profile_url = a.get("profile_url", f"https://www.instagram.com/{a['handle'].lstrip('@')}/")
 
-        tp = a.get("top_post") or {}
-        top_html = ""
-        if tp and tp.get("caption"):
-            comments = tp.get("comments", 0)
-            top_html = f"""
-        <div class="top-post-wrap">
-          <div class="top-post-label">Top Post This Week</div>
-          <div class="top-post">
-            <div class="top-post-thumb">📸</div>
-            <div class="top-post-body">
-              <div class="top-post-caption">{tp['caption'][:240]}</div>
-              <div class="top-post-stats">
-                <span><strong>{fmt_num(tp.get('reach',0))}</strong> reach</span>
-                <span><strong>{fmt_num(tp.get('likes',0))}</strong> likes</span>
-                {f'<span><strong>{comments}</strong> comments</span>' if comments else ''}
-              </div>
-              <a class="top-post-link" href="{profile_url}" target="_blank" rel="noopener">View on Instagram ↗</a>
-            </div>
-          </div>
-        </div>"""
+        top_html = ""  # top post section removed (no direct post URLs available)
 
         campus_color = CAMPUS_COLORS.get(a["handle"], "#3554c5")
         campus_img = CAMPUS_IMAGES.get(a["handle"])
@@ -418,7 +394,7 @@ def build():
         },
     }
 
-    top_account_name = max(ACCOUNT_DATA, key=lambda x: x.get("impressions",0), default={"handle":"—"})["handle"]
+    top_account_name = max(ACCOUNT_DATA, key=lambda x: x.get("impressions",0), default={"name":"—"})["name"]
 
     html = TEMPLATE.read_text() \
         .replace("{{WEEK_OF}}",          week_label) \
@@ -433,9 +409,7 @@ def build():
         .replace("{{ENG_DELTA}}",        "+0") \
         .replace("{{ENG_DELTA_CLASS}}",  "neutral") \
         .replace("{{TOP_PLATFORM}}",     top_account_name) \
-        .replace("{{BEST_POST_REACH}}",  fmt_num(best_post_reach)) \
-        .replace("{{BEST_POST_ACCOUNT}}",best_post_account) \
-        .replace("{{BEST_POST_URL}}",    best_post_url) \
+        .replace("{{TOTAL_NF_REACH}}",   fmt_num(total_nf_reach)) \
         .replace("{{TOTAL_FOLLOWERS}}",  "—") \
         .replace("{{FOLLOW_DELTA}}",     delta_str(net_followers)) \
         .replace("{{FOLLOW_DELTA_CLASS}}",delta_class(net_followers)) \
