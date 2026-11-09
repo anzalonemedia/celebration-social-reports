@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Celebration Social Report — {{WEEK_OF}}</title>
+<style>
+/* ── Self-hosted brand fonts ───────────────────────────────────────────────── */
+@font-face { font-family:'Gelica'; src:url('../assets/fonts/Gelica-Regular.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'CircularXX'; src:url('../assets/fonts/CircularXX-Light.ttf') format('truetype'); font-weight:300; font-style:normal; font-display:swap; }
+@font-face { font-family:'CircularXX'; src:url('../assets/fonts/CircularXX-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'CircularXX'; src:url('../assets/fonts/CircularXX-Book.ttf') format('truetype'); font-weight:450; font-style:normal; font-display:swap; }
+@font-face { font-family:'CircularXX'; src:url('../assets/fonts/CircularXX-Medium.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+
+/* ── Celebration brand tokens ─────────────────────────────────────────────── */
+:root {
+  /* Palette */
+  --blue:      #3554c5;
+  --orange:    #e65228;
+  --yellow:    #eae361;
+  --black:     #282829;
+  --ivory:     #e1dcd7;
+  --aqua:      #a5c2c0;
+  --olive:     #646a40;
+  --burgundy:  #8c2944;
+  --pink:      #e7bfbf;
+
+  /* Light theme */
+  --bg:        #ede9e5;   /* warm ivory base */
+  --bg-raised: #f5f2ef;
+  --card:      #ffffff;
+  --fg:        #282829;
+  --fg-muted:  #6b6866;
+  --border:    rgba(40,40,41,0.12);
+  --border-strong: rgba(40,40,41,0.22);
+
+  /* Type */
+  --font-display: 'Gelica', 'Futura', 'Century Gothic', sans-serif;
+  --font-body:    'CircularXX', 'Helvetica Neue', Arial, sans-serif;
+
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #1e1d1c;
+    --bg-raised: #242322;
+    --card:      #2c2b2a;
+    --fg:        #e1dcd7;
+    --fg-muted:  #9a9490;
+    --border:    rgba(225,220,215,0.1);
+    --border-strong: rgba(225,220,215,0.2);
+    --ivory:     #d4cfc9;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#1e1d1c; --bg-raised:#242322; --card:#2c2b2a;
+  --fg:#e1dcd7; --fg-muted:#9a9490;
+  --border:rgba(225,220,215,0.1); --border-strong:rgba(225,220,215,0.2);
+  --ivory:#d4cfc9; color-scheme:dark;
+}
+
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html, body { height:100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  padding-left:  max(0px, env(safe-area-inset-left,0px));
+  padding-right: max(0px, env(safe-area-inset-right,0px));
+}
+
+/* ── HEADER ───────────────────────────────────────────────────────────────── */
+.site-header {
+  background: var(--black);
+  position: relative;
+  overflow: hidden;
+}
+/* Blue accent band top */
+.site-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--orange) 60%, var(--yellow) 100%);
+}
+/* Textured warm radial glow */
+.site-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 90% 110%, rgba(53,84,197,.35) 0%, transparent 55%),
+              radial-gradient(ellipse at 10% -10%, rgba(230,82,40,.2) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.header-inner {
+  position: relative; z-index: 1;
+  max-width: 1160px; margin: 0 auto;
+  padding: 2rem max(24px, env(safe-area-inset-left,0px));
+  padding-right: max(24px, env(safe-area-inset-right,0px));
+}
+
+/* Pebble + wordmark row */
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.pebble-mark {
+  width: 36px; height: 36px; flex-shrink: 0;
+  /* Placeholder ring until SVG is provided */
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.pebble-mark img { width: 100%; height: 100%; object-fit: contain; }
+.pebble-mark svg { width: 20px; height: 20px; }
+.brand-label {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.brand-divider {
+  width: 1px; height: 18px; background: rgba(255,255,255,0.2); margin: 0 0.1rem;
+}
+.brand-label-right {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+/* Back link */
+.back-link {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.72rem; font-weight: 450; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: color .15s;
+}
+.back-link:hover { color: rgba(255,255,255,0.8); }
+
+/* Period label (small eyebrow above title) */
+.report-eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 0.5rem;
+}
+
+/* Main title */
+.report-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.report-title em {
+  font-style: normal;
+  color: rgba(255,255,255,0.45);
+}
+
+/* Period meta */
+.report-period {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.01em;
+  min-height: 1.4em;
+}
+
+/* Stats strip */
+.header-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.header-stat {
+  flex: 1 0 120px;
+  padding-right: 2rem;
+  margin-bottom: 0.5rem;
+}
+.header-stat .stat-num {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: -0.02em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.header-stat .stat-num.accent { color: var(--yellow); }
+.header-stat .stat-label {
+  font-family: var(--font-body);
+  font-size: 0.63rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 0.3rem;
+}
+
+/* ── STICKY NAV ───────────────────────────────────────────────────────────── */
+.site-nav {
+  position: sticky;
+  top: 0; z-index: 20;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0 max(24px, env(safe-area-inset-left,0px));
+  padding-right: max(24px, env(safe-area-inset-right,0px));
+}
+.nav-inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto;
+}
+.nav-link {
+  display: block;
+  padding: 0.9rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .15s;
+}
+.nav-link:hover { color: var(--blue); }
+.nav-link.active { color: var(--blue); border-bottom-color: var(--blue); }
+.nav-spacer { flex: 1; }
+
+/* Timeframe toggle */
+.tf-toggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0.5rem 0;
+  flex-shrink: 0;
+}
+.tf-btn {
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  background: none;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.tf-btn:first-child { border-radius: 4px 0 0 4px; }
+.tf-btn:last-child  { border-radius: 0 4px 4px 0; }
+.tf-btn + .tf-btn   { border-left: none; }
+.tf-btn.active      { background: var(--blue); border-color: var(--blue); color: #fff; }
+.tf-btn:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+
+/* ── MAIN LAYOUT ──────────────────────────────────────────────────────────── */
+main {
+  max-width: 1160px; margin: 0 auto;
+  padding: 3rem max(24px, env(safe-area-inset-left,0px));
+  padding-right: max(24px, env(safe-area-inset-right,0px));
+  display: flex; flex-direction: column; gap: 3.5rem;
+}
+
+/* ── SECTION LABEL ────────────────────────────────────────────────────────── */
+.section-label {
+  font-size: 0.63rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── SUMMARY TILES ────────────────────────────────────────────────────────── */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.tile {
+  background: var(--card);
+  padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 0.3rem;
+}
+.tile-label {
+  font-size: 0.63rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.tile-value {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.tile-delta {
+  font-size: 0.75rem;
+  font-weight: 450;
+  margin-top: 0.1rem;
+}
+.tile-delta.up      { color: #2a7a4f; }
+.tile-delta.down    { color: #c03333; }
+.tile-delta.neutral { color: var(--fg-muted); }
+/* Colored left accent per tile */
+.tile-blue   { border-left: 3px solid var(--blue); }
+.tile-orange { border-left: 3px solid var(--orange); }
+.tile-aqua   { border-left: 3px solid var(--aqua); }
+.tile-olive  { border-left: 3px solid var(--olive); }
+
+/* ── BAR CHART ────────────────────────────────────────────────────────────── */
+.bar-chart   { display: flex; flex-direction: column; gap: 0.85rem; }
+.bar-row     { display: flex; align-items: center; gap: 1rem; }
+.bar-name    {
+  font-size: 0.78rem;
+  min-width: 170px; max-width: 170px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--fg);
+  font-weight: 450;
+}
+.bar-track   {
+  flex: 1; height: 6px; min-width: 0;
+  background: var(--border); border-radius: 99px; overflow: hidden;
+}
+.bar-fill    {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .9s cubic-bezier(.4,0,.2,1);
+}
+.bar-value   {
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  min-width: 56px; text-align: right;
+  color: var(--fg-muted);
+}
+
+/* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
+.accounts-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.account-card {
+  --campus: var(--blue);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.account-card:hover {
+  box-shadow: 0 4px 32px rgba(0,0,0,.08);
+}
+
+/* Campus-colored top rule (fallback) */
+.account-card-top {
+  height: 3px;
+  background: var(--campus);
+}
+
+/* Campus photo header */
+.card-photo {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.card-photo-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0) 40%,
+    rgba(0,0,0,0.45) 100%);
+}
+.card-photo::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--campus);
+}
+
+/* txcelebration 4-panel collage */
+.card-collage {
+  height: 200px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+.collage-panel {
+  background-size: cover;
+  background-position: center;
+  transition: transform .4s ease;
+}
+.collage-panel:nth-child(1) { background-position: center 40%; }
+.collage-panel:nth-child(2) { background-position: center 30%; }
+.collage-panel:nth-child(3) { background-position: center 50%; }
+.collage-panel:nth-child(4) { background-position: center 60%; }
+.collage-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%),
+    linear-gradient(to right, transparent 49.5%, rgba(0,0,0,0.25) 49.5%, rgba(0,0,0,0.25) 50.5%, transparent 50.5%),
+    linear-gradient(to bottom, transparent 49.5%, rgba(0,0,0,0.25) 49.5%, rgba(0,0,0,0.25) 50.5%, transparent 50.5%);
+}
+.card-collage::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--campus);
+}
+
+.account-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.account-header-left { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+
+.campus-badge {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--campus);
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.06em; color: #fff;
+}
+/* Pebble inside campus badge */
+.campus-badge img { width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
+
+.account-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+}
+.account-handle {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  margin-top: 0.1rem;
+  font-weight: 300;
+}
+.account-cta {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--campus);
+  text-decoration: none;
+  border: 1px solid var(--campus);
+  border-radius: 5px;
+  padding: 0.35rem 0.75rem;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.account-cta:hover { background: var(--campus); color: #fff; }
+
+/* Metrics grid */
+.account-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  padding: 1.25rem 1.5rem;
+  gap: 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.metric-label {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.metric-value {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  margin-top: 0.15rem;
+}
+.metric-sub {
+  font-size: 0.68rem;
+  color: var(--fg-muted);
+  margin-top: 0.1rem;
+  font-weight: 300;
+}
+.metric-delta { font-size: 0.7rem; font-weight: 450; margin-top: 0.1rem; }
+.metric-delta.up   { color: #2a7a4f; }
+.metric-delta.down { color: #c03333; }
+.metric-delta.neutral { color: var(--fg-muted); }
+
+/* Top post */
+.top-post-wrap { padding: 1.25rem 1.5rem; }
+.top-post-label {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 0.9rem;
+}
+.top-post {
+  display: flex; gap: 1.1rem; align-items: flex-start;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.top-post-thumb {
+  width: 88px; min-width: 88px; height: 88px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--campus);
+  opacity: 0.9;
+  flex-shrink: 0;
+  font-size: 1.4rem;
+}
+.top-post-body { padding: 0.85rem 1rem 0.85rem 0; flex: 1; min-width: 0; }
+.top-post-caption {
+  font-size: 0.83rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.top-post-stats {
+  display: flex; gap: 1.25rem; margin-top: 0.55rem; flex-wrap: wrap;
+}
+.top-post-stats span { font-size: 0.72rem; color: var(--fg-muted); }
+.top-post-stats strong { color: var(--fg); font-variant-numeric: tabular-nums; }
+.top-post-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--campus);
+  text-decoration: none;
+}
+.top-post-link:hover { text-decoration: underline; }
+
+/* ── PRINT / PDF EXPORT ───────────────────────────────────────────────────── */
+@media print {
+  @page { size: A4; margin: 16mm 14mm; }
+  .site-nav, .back-link, .export-btn-wrap, .tf-toggle { display: none !important; }
+  .site-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .account-card { break-inside: avoid; }
+  .tiles { break-inside: avoid; }
+  body { font-size: 13px; }
+  .report-title { font-size: 2rem; }
+  main { padding: 1rem 0; gap: 2rem; }
+  .header-inner { padding: 1.5rem 1rem; }
+}
+
+/* ── FOOTER ───────────────────────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem max(24px, env(safe-area-inset-left,0px));
+  padding-right: max(24px, env(safe-area-inset-right,0px));
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  flex-wrap: wrap;
+}
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--fg-muted);
+  letter-spacing: 0.01em;
+}
+.footer-meta { font-size: 0.72rem; color: var(--fg-muted); }
+.footer-meta a { color: var(--blue); text-decoration: none; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .header-stats { gap: 1.25rem; }
+  .header-stat .stat-num { font-size: 1.6rem; }
+  .bar-name { min-width: 110px; max-width: 110px; }
+  .account-metrics { grid-template-columns: repeat(2, 1fr); }
+  .top-post { flex-direction: column; }
+  .top-post-thumb { width: 100%; height: 100px; min-width: unset; }
+  .top-post-body { padding: 0.85rem; }
+  .account-cta { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────────────────────────────── -->
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- Brand row -->
+    <div class="brand-row">
+      <div class="pebble-mark">
+        <img src="../assets/pebble.png" alt="Celebration" style="width:36px;height:36px;filter:brightness(0) invert(1)">
+      </div>
+      <span class="brand-label">Celebration Church</span>
+      <span class="brand-divider"></span>
+      <span class="brand-label-right">Social Report</span>
+    </div>
+
+    <a class="back-link" href="../index.html">← All Reports</a>
+
+    <div class="report-eyebrow" id="tf-eyebrow">28-Day Performance · Oct 12 – Nov 8, 2026</div>
+    <h1 class="report-title">{{WEEK_OF}}</h1>
+    <div class="report-period" id="hdr-period">Generated {{GENERATED_DATE}} · {{ACCOUNT_COUNT}} accounts</div>
+
+    <div class="header-stats">
+      <div class="header-stat">
+        <div class="stat-num" data-metric="total_views">{{TOTAL_REACH}}</div>
+        <div class="stat-label">Total Views</div>
+      </div>
+      <div class="header-stat">
+        <div class="stat-num" data-metric="total_engagement">{{TOTAL_ENGAGEMENT}}</div>
+        <div class="stat-label">Interactions</div>
+      </div>
+      <div class="header-stat">
+        <div class="stat-num accent" data-metric="net_followers">{{NET_FOLLOWERS}}</div>
+        <div class="stat-label">Net Followers</div>
+      </div>
+      <div class="header-stat">
+        <div class="stat-num" data-metric="total_posts">{{TOTAL_POSTS}}</div>
+        <div class="stat-label">Posts &amp; Stories</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────────── -->
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-link active" href="#summary">Summary</a>
+    <a class="nav-link" href="#accounts">Accounts</a>
+    <div class="nav-spacer"></div>
+    <div class="export-btn-wrap" style="padding:0.5rem 0;flex-shrink:0">
+      <button id="export-pdf-btn" onclick="exportPDF()" style="
+        display:inline-flex;align-items:center;gap:0.4rem;
+        padding:0.35rem 0.9rem;
+        font-family:var(--font-body);font-size:0.68rem;font-weight:500;
+        letter-spacing:0.06em;text-transform:uppercase;
+        background:var(--black);color:#fff;
+        border:none;border-radius:5px;cursor:pointer;
+        transition:opacity .15s;
+      " onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'">
+        ↓ Export PDF
+      </button>
+    </div>
+    <div class="tf-toggle">
+      <button class="tf-btn" data-tf="7">7 Days</button>
+      <button class="tf-btn active" data-tf="28">28 Days</button>
+      <button class="tf-btn" data-tf="90">90 Days</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ─────────────────────────────────────────────────────────────────── -->
+<main>
+
+  <!-- Summary tiles -->
+  <section id="summary">
+    <div class="section-label">At a Glance</div>
+    <div class="tiles">
+      <div class="tile tile-blue">
+        <div class="tile-label">Avg Engagement Rate</div>
+        <div class="tile-value">{{AVG_ENG_RATE}}%</div>
+        <div class="tile-delta {{ENG_DELTA_CLASS}}">{{ENG_DELTA}} vs prior period</div>
+      </div>
+      <div class="tile tile-orange">
+        <div class="tile-label">Top Account</div>
+        <div class="tile-value" style="font-size:1rem;padding-top:.4rem;font-family:var(--font-body);font-weight:450">{{TOP_PLATFORM}}</div>
+        <div class="tile-delta neutral">by views</div>
+      </div>
+      <div class="tile tile-aqua">
+        <div class="tile-label">Best Single Post</div>
+        <div class="tile-value">{{BEST_POST_REACH}}</div>
+        <div class="tile-delta neutral">reach · {{BEST_POST_ACCOUNT}}</div>
+      </div>
+      <div class="tile tile-olive">
+        <div class="tile-label">Net New Followers</div>
+        <div class="tile-value">{{FOLLOW_DELTA}}</div>
+        <div class="tile-delta {{FOLLOW_DELTA_CLASS}}">across all accounts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Views bar chart -->
+  <section>
+    <div class="section-label">Views by Account</div>
+    <div class="bar-chart">{{REACH_BARS}}</div>
+  </section>
+
+  <!-- Account breakdown -->
+  <section id="accounts">
+    <div class="section-label">Account Breakdown</div>
+    <div class="accounts-grid">{{ACCOUNT_CARDS}}</div>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ───────────────────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-brand">Celebration Church</div>
+  <div class="footer-meta">
+    Auto-generated weekly &nbsp;·&nbsp; <a href="../index.html">All Reports</a>
+  </div>
+</footer>
+
+<script>
+// ── PDF Export ────────────────────────────────────────────────────────────
+function exportPDF() {
+  const btn = document.getElementById('export-pdf-btn');
+  const activeTf = document.querySelector('.tf-btn.active');
+  const tfLabel = activeTf ? activeTf.textContent.trim() : '28 Days';
+  const eyebrowText = document.getElementById('tf-eyebrow')?.textContent || '';
+
+  // Set document title to drive the PDF filename
+  const orig = document.title;
+  document.title = `Celebration Social Report — ${eyebrowText}`;
+
+  // Brief delay so the title update registers, then print
+  setTimeout(() => {
+    window.print();
+    document.title = orig;
+  }, 100);
+}
+
+// ── Timeframe toggle ───────────────────────────────────────────────────────
+const tfData   = TIMEFRAME_DATA;
+const eyebrow  = document.getElementById('tf-eyebrow');
+
+document.querySelectorAll('.tf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const d = tfData[btn.dataset.tf];
+    if (!d) return;
+
+    // Update header summary stats
+    document.querySelectorAll('[data-metric]').forEach(el => {
+      const v = d[el.dataset.metric];
+      if (v !== undefined) el.textContent = v;
+    });
+
+    // Update per-account card metrics
+    if (d.accounts) {
+      document.querySelectorAll('[data-acct-metric]').forEach(el => {
+        const handle = el.dataset.acct;
+        const metric = el.dataset.acctMetric;
+        const acctData = d.accounts[handle];
+        if (acctData && acctData[metric] !== undefined) {
+          el.textContent = acctData[metric];
+        }
+      });
+    }
+
+    // Update period label in nav eyebrow
+    if (eyebrow) eyebrow.textContent = `${d.label} · ${d.dateRange}`;
+  });
+});
+</script>
+</body>
+</html>

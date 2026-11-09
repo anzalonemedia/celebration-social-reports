@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celebration Social Reports</title>
+<style>
+@font-face {
+  font-family: 'Gelica';
+  src: url('assets/fonts/Gelica-Regular.otf') format('opentype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'CircularXX';
+  src: url('assets/fonts/CircularXX-Light.ttf') format('truetype');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'CircularXX';
+  src: url('assets/fonts/CircularXX-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'CircularXX';
+  src: url('assets/fonts/CircularXX-Book.ttf') format('truetype');
+  font-weight: 450; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'CircularXX';
+  src: url('assets/fonts/CircularXX-Medium.ttf') format('truetype');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+</style>
+<style>
+:root {
+  --blue: #3554c5; --orange: #e65228; --yellow: #eae361;
+  --black: #282829; --ivory: #e1dcd7; --aqua: #a5c2c0;
+  --bg: #ede9e5; --fg: #282829; --card: #fff;
+  --border: #d8d2cc; --muted: #72706e;
+  --font-display: 'Gelica', 'Futura', 'Century Gothic', sans-serif;
+  --font-body:    'CircularXX', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1b1a; --fg: #e1dcd7; --card: #262422;
+    --border: #3a3734; --muted: #8a8785; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1c1b1a; --fg: #e1dcd7; --card: #262422;
+  --border: #3a3734; --muted: #8a8785; color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; }
+
+header {
+  background: var(--blue); position: relative; overflow: hidden;
+  padding: 3rem max(24px, env(safe-area-inset-left,0px));
+  padding-right: max(24px, env(safe-area-inset-right,0px));
+}
+header::before {
+  content: ""; position: absolute; top:0; left:0; right:0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--orange) 60%, var(--yellow) 100%);
+}
+header::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 90% 50%, rgba(230,82,40,.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-inner { max-width: 900px; margin: 0 auto; position: relative; }
+.eyebrow {
+  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--yellow); margin-bottom: 0.5rem;
+}
+header h1 {
+  font-family: var(--font-display); font-weight: 200;
+  font-size: clamp(1.8rem, 4vw, 2.8rem); color: #fff; letter-spacing: -0.01em;
+}
+header h1 strong { font-weight: 400; }
+header p { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 0.4rem; }
+
+main {
+  max-width: 900px; margin: 0 auto;
+  padding: 2.5rem max(24px, env(safe-area-inset-left,0px));
+  padding-right: max(24px, env(safe-area-inset-right,0px));
+}
+
+.empty { text-align: center; padding: 5rem 1rem; color: var(--muted); }
+.empty h2 { font-family: var(--font-display); font-weight: 300; font-size: 1.3rem; margin-bottom: 0.5rem; }
+.empty p { font-size: 0.88rem; }
+
+.reports-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.report-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.4rem 1.6rem; display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; text-decoration: none; color: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.report-card:hover { border-color: var(--blue); box-shadow: 0 2px 16px rgba(53,84,197,.1); }
+.report-card-left { display: flex; align-items: center; gap: 1.1rem; min-width: 0; }
+.report-icon {
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+  background: var(--blue); display: flex; align-items: center; justify-content: center;
+}
+.report-icon svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
+.report-week {
+  font-family: var(--font-display); font-weight: 400; font-size: 1rem; line-height: 1.2;
+}
+.report-meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+.report-stats { display: flex; gap: 1.5rem; flex-shrink: 0; }
+.report-stat { text-align: right; }
+.report-stat .num {
+  font-family: var(--font-display); font-weight: 300; font-size: 1.3rem;
+  font-variant-numeric: tabular-nums; color: var(--fg); line-height: 1;
+}
+.report-stat .lbl { font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-top: 0.1rem; }
+.report-arrow { color: var(--muted); font-size: 1.1rem; flex-shrink: 0; }
+
+@media (max-width: 540px) {
+  .report-stats { display: none; }
+}
+
+footer {
+  text-align: center; padding: 2rem; font-size: 0.75rem;
+  color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem;
+}
+footer a { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner" style="position:relative;z-index:1">
+    <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1.5rem">
+      <img src="assets/pebble.png" alt="Celebration" style="width:32px;height:32px;filter:brightness(0) invert(1)">
+      <span style="font-size:0.65rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Celebration Church</span>
+    </div>
+    <div class="eyebrow">Social Reports</div>
+    <h1>Instagram <strong>Performance</strong></h1>
+    <p>Weekly data across all Celebration campuses &amp; ministries</p>
+  </div>
+</header>
+
+<main>
+  <div id="report-list">
+    <div class="empty">
+      <h2>No reports yet</h2>
+      <p>Weekly reports will appear here automatically every Monday.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Celebration Church &nbsp;·&nbsp; <a href="https://celebration.church">celebration.church</a>
+</footer>
+
+<script>
+const reports = [{"file": "week-2026-11-02.html", "weekOf": "November 2, 2026 \u2013 November 8, 2026", "accounts": 6, "totalPosts": 114, "totalReach": 1045300, "generated": "2026-11-09T14:55:13.045334"}];
+
+function fmtNum(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return String(n);
+}
+
+if (reports && reports.length > 0) {
+  const list = document.getElementById('report-list');
+  list.innerHTML = '<div class="reports-list">' + reports.map(r => `
+    <a class="report-card" href="reports/${r.file}">
+      <div class="report-card-left">
+        <div class="report-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div>
+          <div class="report-week">Week of ${r.weekOf}</div>
+          <div class="report-meta">${r.accounts} accounts · ${r.totalPosts} posts &amp; stories</div>
+        </div>
+      </div>
+      <div class="report-stats">
+        <div class="report-stat">
+          <div class="num">${fmtNum(r.totalReach)}</div>
+          <div class="lbl">Views</div>
+        </div>
+      </div>
+      <span class="report-arrow">→</span>
+    </a>
+  `).join('') + '</div>';
+}
+</script>
+</body>
+</html>
