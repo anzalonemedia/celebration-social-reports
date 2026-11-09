@@ -227,126 +227,123 @@ def build():
         <div class="bar-value">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
       </div>"""
 
-    # ── Per-account content scores from content audit (Nov 2–8, 2026) ────────
-    CONTENT_SCORES = {
-        "@txcelebration":            {"posts": 5, "score": 7.6, "read": "Strongest feed: Scripture, real people, links"},
-        "@wave.students":            {"posts": 7, "score": 5.1, "read": "Seven posts for one night, mostly logistics"},
-        "@celebration.georgetown":   {"posts": 3, "score": 4.3, "read": "Strong photos, 'Celebration Family' copy"},
-        "@celebration.leander":      {"posts": 1, "score": 4.0, "read": "Sunday recap posted on Tuesday"},
-        "@celebration.centralaustin":{"posts": 0, "score": None, "read": "No post of its own since Oct 17"},
-        "@celebration.laketravis":   {"posts": 0, "score": None, "read": "No post of its own since Oct 7"},
-    }
+    # ── Auto-generate per-account insights from analytics data ───────────────
+    def account_score(a):
+        """Data-driven 0–10 score from engagement rate, non-follower reach, posts, and growth."""
+        views = a.get("impressions", 0)
+        eng   = a.get("engagement", 0)
+        reach = a.get("reach", 0)
+        nf_reach = a.get("reach_nonfollowers", 0)
+        posts = a.get("ig_posts", 0)
+        stories = a.get("ig_stories", 0)
+        new_f = a.get("new_followers", 0)
 
-    # Per-account AI insights
-    ACCOUNT_INSIGHTS = {
-        "@txcelebration": {
-            "summary": "Main campus led the network with a <strong>7.6/10</strong> content score — the highest of any account. "
-                       "5 feed posts anchored by real people and scripture performed well. "
-                       "The standout was Pastor Jackson's Philippians 4:8 clip (<strong>9/10</strong>): one verse, one idea, a link. "
-                       "Pastor Joe's selfie invitation (<strong>7/10</strong>) drove the week's most likes (685) and 31 shares — "
-                       "but the caption opened with 'Hey church!!' and had no times or newcomer invite.",
-            "wins": [
-                "Pastor Jackson's Philippians 4:8 post: 566 likes, 26 comments, 27 shares",
-                "Non-follower reach at 190K+ — content is breaking beyond existing audience",
-                "Scripture and real people in frame = top-performing combination",
-            ],
-            "fixes": [
-                "Start captions with WHY before logistics — 'Mind won't slow down? Try this verse for one week.'",
-                "Pastor Joe invitation: add all campus times + 'bring someone' to the caption",
-                "Collab WAVE United and big ministry nights onto the main feed for parent reach",
-            ],
-        },
-        "@wave.students": {
-            "summary": "WAVE posted 7 times in one week — all for WAVE United Rodeo night (Nov 8). "
-                       "Photos were full of real students. Copy was nearly all logistics, only one post "
-                       "said why a student should come. Best post: 'WAVE UNITED is so fun!!!' (<strong>8/10</strong>) "
-                       "— real hug photo, list of fun things, then worship and message with time + address. "
-                       "WAVE United never reached the main feed — the biggest student night of fall was "
-                       "invisible to parents.",
-            "wins": [
-                "'WAVE UNITED is so fun' post hit 8/10 — real people, clear why + where",
-                "7 posts showed consistent energy and real student moments",
-                "26 stories kept students engaged throughout the week",
-            ],
-            "fixes": [
-                "Lead with WHY before the activity list — 'One night for every student in our church'",
-                "Collab major events onto @txcelebration so parents and the broader church see it",
-                "Add 1 feed post per week outside events to build consistent audience between nights",
-            ],
-        },
-        "@celebration.georgetown": {
-            "summary": "Georgetown posted 3 times and averaged <strong>4.3/10</strong>. Photos were strong — "
-                       "real people, well lit. The copy defaulted to 'Celebration Family' on all three "
-                       "captions, which reads as insider language and closes the door to newcomers. "
-                       "The Pursuit Night recap went up Friday evening, two days after the event. "
-                       "The pastor invite collab drove the week's best reach for this campus (7.1K).",
-            "wins": [
-                "Strong photo quality — real people in real moments",
-                "Pastor invite collab reached 7,100 accounts — highest single-post reach",
-                "+87 net new followers this period, highest growth rate across all campus accounts",
-            ],
-            "fixes": [
-                "Drop 'Celebration Family' — replace with specific, newcomer-friendly language",
-                "Post Sunday recap on Sunday, not Friday — timing matters for algorithmic reach",
-                "Add times, address, and 'new here? plan your visit' to service-time posts",
-            ],
-        },
-        "@celebration.leander": {
-            "summary": "Leander posted once: a warm lobby photo of a woman hugging a little girl, captioned "
-                       "'What a great Sunday!' — posted Tuesday at 4:04 PM, two days after Sunday (<strong>4/10</strong>). "
-                       "The photo had real emotional pull; the caption gave no reason to come, no time, no place. "
-                       "15 net new followers suggest organic discovery is happening — there's an audience "
-                       "ready for more consistent content.",
-            "wins": [
-                "Real, emotionally warm photo — the right visual instinct",
-                "+15 net new followers despite minimal posting",
-                "Stories strategy (7) kept engagement active through the week",
-            ],
-            "fixes": [
-                "Post Sunday recap on Sunday afternoon — timing is content",
-                "Caption formula: [why it matters] + [times] + [address] + [plan your visit link]",
-                "Aim for 2–3 feed posts/week: Sunday recap, mid-week moment, and an invite",
-            ],
-        },
-        "@celebration.centralaustin": {
-            "summary": "Central Austin published <strong>no original feed posts</strong> this week — or in the "
-                       "three weeks prior (last post Oct 17). The only content on the grid is a main-account "
-                       "collab from Oct 23. 26 stories went out, so the account is active, but the feed "
-                       "has gone dark. This contributed to the week's only net-negative follower count (-1). "
-                       "An account with 2,704 followers and no feed posts is leaving significant reach on the table.",
-            "wins": [
-                "26 stories published — team is active and creating content",
-                "2,704 followers represent a real local audience worth engaging",
-                "Engagement rate on stories appears strong relative to account size",
-            ],
-            "fixes": [
-                "Post at minimum 1 original feed post per week — a local photo with a real person + Sunday times",
-                "Sunday recap post every Sunday — this alone would re-activate the feed algorithm",
-                "Avoid collab-only feeds; campus accounts need their own voice",
-            ],
-        },
-        "@celebration.laketravis": {
-            "summary": "Lake Travis has not published an original feed post since Oct 7 — over a month. "
-                       "Like Central Austin, 12 stories ran this week, but the grid is effectively dormant. "
-                       "With 854 followers and 34K views this period (from stories + collabs), there's clear "
-                       "interest in this campus. A weekly local photo post would meaningfully extend that reach "
-                       "beyond the existing audience.",
-            "wins": [
-                "34K views despite no feed posts — stories are driving real impressions",
-                "Engagement rate (2.72%) is decent for the account's size",
-                "+10 net new followers this period — people are finding and following",
-            ],
-            "fixes": [
-                "Resume feed posting immediately — 1 original post per week minimum",
-                "Lead with a photo of a real person + 'See you Sunday' + campus times",
-                "Sunday recap post on Sunday: 'This is Sunday at Lake Travis' + join us next week",
-            ],
-        },
-    }
+        # Engagement rate vs Instagram benchmarks (avg ~1–3%)
+        er = (eng / views * 100) if views else 0
+        er_pts = 3 if er >= 4 else (2 if er >= 2.5 else (1 if er >= 1 else 0))
+
+        # Non-follower reach ratio — how well content discovers new people
+        nf_pct = (nf_reach / reach * 100) if reach else 0
+        nf_pts = 3 if nf_pct >= 80 else (2 if nf_pct >= 60 else (1 if nf_pct >= 30 else 0))
+
+        # Posting activity — feed posts matter more than stories for discoverability
+        post_pts = 2 if posts >= 2 else (1 if posts == 1 else 0)
+
+        # Follower growth
+        growth_pts = 2 if new_f >= 20 else (1 if new_f > 0 else 0)
+
+        raw = er_pts + nf_pts + post_pts + growth_pts  # 0–10
+        return round(raw, 1)
+
+    def account_insight(a, all_accounts):
+        views    = a.get("impressions", 0)
+        reach    = a.get("reach", 0)
+        nf_reach = a.get("reach_nonfollowers", 0)
+        f_reach  = a.get("reach_followers", 0)
+        eng      = a.get("engagement", 0)
+        er       = round((eng / views * 100) if views else 0, 2)
+        nf_pct   = round((nf_reach / reach * 100) if reach else 0)
+        posts    = a.get("ig_posts", 0)
+        stories  = a.get("ig_stories", 0)
+        new_f    = a.get("new_followers", 0)
+        d7_v     = a.get("d7_views", 0)
+        d90_v    = a.get("d90_views", 0)
+
+        # Rank this account among all by impressions
+        sorted_by_views = sorted(all_accounts, key=lambda x: x.get("impressions",0), reverse=True)
+        rank = next(i+1 for i, x in enumerate(sorted_by_views) if x["handle"] == a["handle"])
+        total = len(all_accounts)
+
+        # Trend: compare 7-day to 28-day daily average
+        daily_28 = views / 28 if views else 0
+        daily_7  = d7_v / 7 if d7_v else 0
+        trend = "above" if daily_7 > daily_28 * 1.1 else ("below" if daily_7 < daily_28 * 0.9 else "in line with")
+
+        # Build summary sentence from data
+        content_mix = ""
+        if posts == 0 and stories > 0:
+            content_mix = f"Published no feed posts this period — {stories} stories only."
+        elif posts > 0 and stories == 0:
+            content_mix = f"Published {posts} feed post{'s' if posts>1 else ''} with no stories."
+        else:
+            content_mix = f"Published {posts} feed post{'s' if posts>1 else ''} and {stories} stor{'ies' if stories>1 else 'y'}."
+
+        follower_note = ""
+        if new_f < 0:
+            follower_note = f"Net follower count is <strong>negative ({new_f})</strong> — the only account declining this period."
+        elif new_f == 0:
+            follower_note = "Net follower change is flat at zero."
+        else:
+            follower_note = f"Gained <strong>{delta_str(new_f)} followers</strong> over 28 days."
+
+        summary = (
+            f"Ranked <strong>#{rank} of {total}</strong> by views this period with "
+            f"<strong>{fmt_num(views)}</strong> views and an engagement rate of <strong>{er}%</strong>. "
+            f"{content_mix} "
+            f"7-day volume is {trend} the 28-day daily average, suggesting momentum is "
+            f"{'building' if trend == 'above' else ('fading' if trend == 'below' else 'steady')}. "
+            f"{follower_note}"
+        )
+
+        # Wins — flag genuinely strong signals
+        wins = []
+        if nf_pct >= 70:
+            wins.append(f"<strong>{nf_pct}%</strong> of reach is non-followers — content is finding new people.")
+        if er >= 4:
+            wins.append(f"<strong>{er}%</strong> engagement rate is well above the Instagram average of 1–3%.")
+        elif er >= 2.5:
+            wins.append(f"<strong>{er}%</strong> engagement rate — solid, above average for this platform.")
+        if new_f >= 20:
+            wins.append(f"<strong>{delta_str(new_f)}</strong> net new followers is the strongest growth signal in the network.")
+        if stories >= 20:
+            wins.append(f"<strong>{stories} stories</strong> published — consistent daily presence keeps the account visible.")
+        if posts >= 3:
+            wins.append(f"<strong>{posts} feed posts</strong> in the period — steady feed presence aids discoverability.")
+        if not wins:
+            wins.append(f"{fmt_num(views)} views reached despite limited posting — there's latent audience interest here.")
+
+        # Fixes — flag the real gaps
+        fixes = []
+        if posts == 0:
+            fixes.append("Zero feed posts this period. Feed presence is what the algorithm uses for discovery — stories alone won't grow the account.")
+        elif posts == 1:
+            fixes.append("One feed post is better than zero but not enough to build consistent reach. Aim for 2–3 per week.")
+        if nf_pct < 40 and reach > 0:
+            fixes.append(f"Only {nf_pct}% of reach is non-followers. Content isn't traveling beyond the existing audience — worth examining what's limiting discovery.")
+        if new_f <= 0:
+            fixes.append("No follower growth (or negative). Feed activity and non-follower content are the levers to pull.")
+        if er < 1.5 and views > 0:
+            fixes.append(f"Engagement rate of {er}% is below the platform baseline. Consider whether the content is giving the audience something to respond to.")
+        if daily_7 < daily_28 * 0.85:
+            fixes.append("7-day views are running below the 28-day average — this week's output was lighter than the period trend.")
+        if not fixes:
+            fixes.append("Strong across the board. Maintain posting frequency and test one new content angle to push non-follower reach higher.")
+
+        return {"summary": summary, "wins": wins[:3], "fixes": fixes[:3]}
 
     # Cards and tab nav
     account_tab_nav = ""
-    account_panels = ""
+    account_panels  = ""
     for a in ACCOUNT_DATA:
         nf = a["new_followers"]
         eng_rate = round((a["engagement"] / a["impressions"] * 100) if a["impressions"] else 0, 2)
@@ -404,17 +401,16 @@ def build():
         nf_class   = delta_class(nf) if nf is not None else "neutral"
 
         # Tab nav button
-        cs = CONTENT_SCORES.get(a["handle"], {})
-        score_badge = f" · {cs['score']}/10" if cs.get("score") else ""
+        sc = account_score(a)
         is_first = (a == ACCOUNT_DATA[0])
         panel_id = a["handle"].replace("@","").replace(".","_")
-        account_tab_nav += f'<button class="acct-tab-btn{" active" if is_first else ""}" data-panel="{panel_id}" style="--campus:{campus_color}">{a["handle"]}{score_badge}</button>\n'
+        account_tab_nav += f'<button class="acct-tab-btn{" active" if is_first else ""}" data-panel="{panel_id}" style="--campus:{campus_color}">{a["handle"]} · {sc}/10</button>\n'
 
         # Per-account AI insight block
-        insight = ACCOUNT_INSIGHTS.get(a["handle"], {})
-        wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in insight.get("wins", []))
-        fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in insight.get("fixes", []))
-        score_display = f"{cs['score']}/10" if cs.get("score") else "—"
+        insight = account_insight(a, ACCOUNT_DATA)
+        wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in insight["wins"])
+        fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in insight["fixes"])
+        score_display = f"{sc}/10"
 
         card_html = f"""<div class="account-card" style="--campus:{campus_color}" data-account="{a['handle']}">
           <div class="account-card-top"></div>
@@ -472,14 +468,14 @@ def build():
             </div>
             <div>
               <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">{a['name']} — Content Audit</div>
-              <div class="insight-label">Week of Nov 2–8, 2026 · {cs.get('posts',0)} original posts · AI content scoring</div>
+              <div class="insight-label">{week_label} · {ig_posts} posts · {ig_stories} stories · AI analytics scoring</div>
             </div>
             <div class="insight-score-pill" style="background:{campus_color}">{score_display}</div>
           </div>
           <div class="acct-insight-body">
             <div class="insight-col">
               <h4>Summary</h4>
-              <p>{insight.get('summary','No summary available.')}</p>
+              <p>{insight['summary']}</p>
             </div>
             <div class="insight-col">
               <h4>What's working</h4>
@@ -498,153 +494,112 @@ def build():
     # Add scoring tab button
     account_tab_nav += '<button class="acct-tab-btn scoring-btn" data-panel="scoring">⭐ Scoring</button>\n'
 
-    # ── Scoring panel ────────────────────────────────────────────────────────
-    # Per-account scores for the grid
+    # ── Auto-generated scoring panel ─────────────────────────────────────────
+    scores = [(a, account_score(a)) for a in ACCOUNT_DATA]
+    net_score   = round(sum(s for _, s in scores) / len(scores), 1)
+    best_acct   = max(scores, key=lambda x: x[1])
+    weakest_acct = min(scores, key=lambda x: x[1])
+
+    # Accounts with zero feed posts
+    no_posts = [a for a in ACCOUNT_DATA if a.get("ig_posts", 0) == 0]
+    posting_rate = round((len(ACCOUNT_DATA) - len(no_posts)) / len(ACCOUNT_DATA) * 100)
+
+    # Network-level wins (from analytics)
+    top_nf_pct    = round(total_nf_reach / total_reach * 100) if total_reach else 0
+    best_eng_acct = max(ACCOUNT_DATA, key=lambda x: round((x["engagement"]/x["impressions"]*100) if x["impressions"] else 0, 2))
+    best_eng_rate = round((best_eng_acct["engagement"]/best_eng_acct["impressions"]*100) if best_eng_acct["impressions"] else 0, 2)
+    best_growth   = max(ACCOUNT_DATA, key=lambda x: x.get("new_followers", 0))
+
+    # Score label
+    if net_score >= 7: score_label = "Strong week across the network."
+    elif net_score >= 5: score_label = "Solid in spots, gaps elsewhere."
+    elif net_score >= 3: score_label = "Inconsistent — a few accounts carrying the rest."
+    else: score_label = "Network output needs attention."
+
+    # Score driver narrative
+    posting_flag = f"{len(no_posts)} of {len(ACCOUNT_DATA)} accounts published zero feed posts" if no_posts else "All accounts posted to their feeds"
+    nf_flag = f"{top_nf_pct}% of total reach came from non-followers — content is finding new audiences" if top_nf_pct > 50 else f"Only {top_nf_pct}% of reach was non-followers — content isn't traveling far beyond existing audiences"
+
+    # Build wins HTML
+    wins_items = [
+        ("📈", f"{best_acct[0]['name']} led the network",
+                f"{fmt_num(best_acct[0]['impressions'])} views, {round(best_acct[0]['engagement']/best_acct[0]['impressions']*100,2)}% engagement rate — the strongest performer this period."),
+        ("🌍", f"Non-follower reach: {fmt_num(total_nf_reach)} accounts",
+                f"{top_nf_pct}% of total reach is new eyes on the church. Discovery is happening — particularly through {max(ACCOUNT_DATA, key=lambda x: x.get('reach_nonfollowers',0))['name']}."),
+        ("📊", f"{best_eng_acct['name']} engagement: {best_eng_rate}%",
+                f"Well above the Instagram average of 1–3%. The audience is responding to what this account puts out."),
+        ("🌱", f"Best growth: {best_growth['name']} (+{best_growth.get('new_followers',0)} followers)",
+                f"Highest net new follower count this period — {fmt_num(best_growth.get('reach_nonfollowers',0))} non-follower accounts reached."),
+    ]
+    wins_html = "".join(f"""<div class="score-item">
+              <span class="score-icon">{icon}</span>
+              <div class="score-item-text"><strong>{title}</strong><span>{body}</span></div>
+            </div>""" for icon, title, body in wins_items)
+
+    # Build fixes HTML — flag real data-driven gaps
+    fix_items = []
+    if no_posts:
+        names = ", ".join(a["name"] for a in no_posts)
+        fix_items.append(("🚫", f"{len(no_posts)} account{'s' if len(no_posts)>1 else ''} with no feed posts",
+                          f"{names}. Feed posts are what the algorithm uses to reach new people. Stories alone don't grow accounts."))
+    low_eng = [a for a in ACCOUNT_DATA if a["impressions"] and (a["engagement"]/a["impressions"]*100) < 1.5]
+    if low_eng:
+        fix_items.append(("📉", "Below-baseline engagement rates",
+                          f"{', '.join(a['name'] for a in low_eng)} {'are' if len(low_eng)>1 else 'is'} below 1.5% — worth asking whether the content is giving people a reason to respond."))
+    neg_growth = [a for a in ACCOUNT_DATA if a.get("new_followers", 0) < 0]
+    if neg_growth:
+        fix_items.append(("⬇", "Net follower decline",
+                          f"{', '.join(a['name'] for a in neg_growth)} lost followers this period. Inactive feeds tend to accelerate churn."))
+    if not fix_items:
+        fix_items.append(("✳", "Maintain posting consistency",
+                          "All accounts are posting. The next level is testing content that opens more of its reach to non-followers."))
+    # Always add a growth lever
+    fix_items.append(("🔁", f"Only {posting_rate}% of accounts posting to feeds",
+                      "Consistent weekly feed posts from every campus account would compound reach week over week."))
+
+    fixes_html = "".join(f"""<div class="score-item">
+              <span class="score-icon">{icon}</span>
+              <div class="score-item-text"><strong>{title}</strong><span>{body}</span></div>
+            </div>""" for icon, title, body in fix_items[:4])
+
+    # Per-account score grid
     acct_score_cells = ""
-    for a in ACCOUNT_DATA:
-        cs = CONTENT_SCORES.get(a["handle"], {})
+    for a, s in scores:
         color = CAMPUS_COLORS.get(a["handle"], "#3554c5")
-        s = cs.get("score")
-        score_disp = f"{s}" if s else "—"
-        acct_score_cells += f"""<div class="acct-score-cell" style="--campus:{color}">
-          <div class="acct-score-badge" style="background:{color}">
+        bar_col = "#3554c5" if color == "#282829" else color
+        acct_score_cells += f"""<div class="acct-score-cell" style="--campus:{bar_col}">
+          <div class="acct-score-badge" style="background:{bar_col}">
             <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
           </div>
           <div>
             <div class="acct-score-name">{a['name']}</div>
             <div class="acct-score-handle">{a['handle']}</div>
           </div>
-          <div class="acct-score-num" style="color:{color}">{score_disp}</div>
+          <div class="acct-score-num" style="color:{bar_col}">{s}/10</div>
         </div>"""
 
     scoring_panel = f"""<div class="acct-panel" id="panel-scoring">
       <div class="scoring-panel">
-
-        <!-- Score hero -->
         <div class="score-hero">
-          <div>
-            <div class="score-num">5.1<span class="score-denom">/10</span></div>
-          </div>
+          <div><div class="score-num">{net_score}<span class="score-denom">/10</span></div></div>
           <div class="score-hero-text">
-            <h2>Week of Nov 2–8: We're informing people, not yet motivating them.</h2>
-            <p>20 original posts scored across all TX Celebration accounts: 4 Motivating (8–10), 7 Informing (5–7), 9 Noise (0–4).
-            Photos and service times are solid. Words rarely say why it matters or invite someone new.
-            Weakest dimensions: "Points to Christ, Church or Calling" (avg 0.50/2) and "Door open to someone new" (avg 0.65/2).</p>
+            <h2>{score_label}</h2>
+            <p>{posting_flag} this period. {nf_flag}.
+            Network engagement rate: {avg_eng_rate}%. Net new followers across all accounts: {delta_str(net_followers)}.
+            Score is analytics-driven: engagement rate, non-follower reach ratio, posting activity, and follower growth.</p>
           </div>
         </div>
-
-        <!-- Wins + Fixes -->
         <div class="score-cols">
-          <div class="score-col wins">
-            <h3>✅ What's working</h3>
-            <div class="score-item">
-              <span class="score-icon">🎯</span>
-              <div class="score-item-text">
-                <strong>Pastor Jackson's Philippians 4:8 clip (9/10)</strong>
-                <span>566 likes, 26 comments, 27 shares — one verse, one idea, a link. No insider language.</span>
-              </div>
-            </div>
-            <div class="score-item">
-              <span class="score-icon">📸</span>
-              <div class="score-item-text">
-                <strong>Real people in real moments</strong>
-                <span>Top-performing posts across every account had actual faces — hugs, families, students in action.</span>
-              </div>
-            </div>
-            <div class="score-item">
-              <span class="score-icon">📊</span>
-              <div class="score-item-text">
-                <strong>Non-follower reach at 228K</strong>
-                <span>Content is reaching new audiences. Discovery is happening — especially through @txcelebration and Georgetown.</span>
-              </div>
-            </div>
-            <div class="score-item">
-              <span class="score-icon">🤝</span>
-              <div class="score-item-text">
-                <strong>Pastor Joe's selfie invite drove the week's most likes (685)</strong>
-                <span>Personal, authentic, face-to-camera. Proof the audience responds to pastoral voice.</span>
-              </div>
-            </div>
-            <div class="score-item">
-              <span class="score-icon">🌊</span>
-              <div class="score-item-text">
-                <strong>WAVE United energy was real</strong>
-                <span>"WAVE UNITED is so fun!!!" post (8/10) — real student hug, fun list, time + address. Right instinct.</span>
-              </div>
-            </div>
-          </div>
-          <div class="score-col fixes">
-            <h3>🔧 Three fixes this week</h3>
-            <div class="score-item">
-              <span class="score-icon">1️⃣</span>
-              <div class="score-item-text">
-                <strong>Start every caption with WHY before logistics</strong>
-                <span>One line of Christ, Church or Calling before the times and address. Drop "Celebration Family."
-                Communications + each ministry's social lead — by Fri Nov 13.</span>
-              </div>
-            </div>
-            <div class="score-item">
-              <span class="score-icon">2️⃣</span>
-              <div class="score-item-text">
-                <strong>Film Pastor Joe's weekly invite + collab ministry nights to main</strong>
-                <span>WAVE United never reached the main feed. Big student nights should live where parents are.
-                Communications + Pastor Joe — by Sat Nov 14.</span>
-              </div>
-            </div>
-            <div class="score-item">
-              <span class="score-icon">3️⃣</span>
-              <div class="score-item-text">
-                <strong>Central Austin + Lake Travis: one local photo post each</strong>
-                <span>Real person + Sunday times. Post Sunday recap on Sunday — not Tuesday.
-                Location Pastors — by Sun Nov 15.</span>
-              </div>
-            </div>
-          </div>
+          <div class="score-col wins"><h3>✅ What's working</h3>{wins_html}</div>
+          <div class="score-col fixes"><h3>🔧 Address this week</h3>{fixes_html}</div>
         </div>
-
-        <!-- Values check -->
-        <div class="score-col" style="border-radius:12px">
-          <h3 style="color:var(--fg-muted);margin-bottom:1rem">Values &amp; Mission Check</h3>
-          <div class="score-item">
-            <span class="score-icon">✅</span>
-            <div class="score-item-text"><strong>Jesus is our Pursuit</strong> <span>— Clear · Pursuit Night, Radianté recap</span></div>
-          </div>
-          <div class="score-item">
-            <span class="score-icon">✅</span>
-            <div class="score-item-text"><strong>Scripture is our Authority</strong> <span>— Clear · Pastor Jackson's Philippians 4:8 clip</span></div>
-          </div>
-          <div class="score-item">
-            <span class="score-icon">❌</span>
-            <div class="score-item-text"><strong>The Holy Spirit is our Power</strong> <span>— Missing · Not seen this week</span></div>
-          </div>
-          <div class="score-item">
-            <span class="score-icon">✅</span>
-            <div class="score-item-text"><strong>People are our Heart</strong> <span>— Clear · Hugs, families, Pastor Joe's invitation</span></div>
-          </div>
-          <div class="score-item">
-            <span class="score-icon">🟡</span>
-            <div class="score-item-text"><strong>Service is our Privilege</strong> <span>— Shown, not named · Parking volunteer in the rain (main, Nov 8)</span></div>
-          </div>
-          <div class="score-item">
-            <span class="score-icon">❌</span>
-            <div class="score-item-text"><strong>Generosity is our Lifestyle</strong> <span>— Missing · Not seen this week</span></div>
-          </div>
-          <div class="score-item">
-            <span class="score-icon">🟡</span>
-            <div class="score-item-text"><strong>Flourishing is our Goal</strong> <span>— Partly · Radianté recap: women + leaders equipped in Mozambique</span></div>
-          </div>
-        </div>
-
-        <!-- Per-account score grid -->
         <div>
-          <div class="section-label" style="margin-bottom:0.75rem">Account Scores · Content Audit (Nov 2–8)</div>
+          <div class="section-label" style="margin-bottom:0.75rem">Account Scores</div>
           <div class="acct-scores-grid">{acct_score_cells}</div>
           <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:0.75rem;font-weight:300">
-            Scoring: 5 questions × 2 pts each = 10 pts max. 8–10 = Motivating, 5–7 = Informing, 0–4 = Noise.
-            Questions: scroll-stopping photo · one clear message · points to Christ/Church/Calling · door open to newcomers · clear next step.
+            Score (0–10) = engagement rate + non-follower reach % + posting activity + follower growth. Generated automatically from Meta Business Suite analytics.
           </p>
         </div>
-
       </div>
     </div>"""
 
