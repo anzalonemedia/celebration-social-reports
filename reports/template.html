@@ -399,60 +399,53 @@ main {
   background: var(--campus);
 }
 
-/* Campus photo header */
-.card-photo {
-  height: 180px;
-  background-size: cover;
-  background-position: center;
+/* Card body: metrics left, image right */
+.card-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: 220px;
+}
+@media (max-width: 700px) {
+  .card-body { grid-template-columns: 1fr; }
+  .card-image { height: 200px; }
+}
+
+/* Right-side image */
+.card-image {
   position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
 }
-.card-photo-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,
-    rgba(0,0,0,0) 40%,
-    rgba(0,0,0,0.45) 100%);
-}
-.card-photo::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--campus);
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 /* txcelebration 4-panel collage */
 .card-collage {
-  height: 200px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   position: relative;
   overflow: hidden;
+  height: 100%;
+  min-height: 220px;
+  border-left: 1px solid var(--border);
 }
 .collage-panel {
   background-size: cover;
   background-position: center;
-  transition: transform .4s ease;
 }
-.collage-panel:nth-child(1) { background-position: center 40%; }
-.collage-panel:nth-child(2) { background-position: center 30%; }
-.collage-panel:nth-child(3) { background-position: center 50%; }
+.collage-panel:nth-child(1) { background-position: center 40%; border-right: 1px solid rgba(0,0,0,0.15); border-bottom: 1px solid rgba(0,0,0,0.15); }
+.collage-panel:nth-child(2) { background-position: center 30%; border-bottom: 1px solid rgba(0,0,0,0.15); }
+.collage-panel:nth-child(3) { background-position: center 50%; border-right: 1px solid rgba(0,0,0,0.15); }
 .collage-panel:nth-child(4) { background-position: center 60%; }
 .collage-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%),
-    linear-gradient(to right, transparent 49.5%, rgba(0,0,0,0.25) 49.5%, rgba(0,0,0,0.25) 50.5%, transparent 50.5%),
-    linear-gradient(to bottom, transparent 49.5%, rgba(0,0,0,0.25) 49.5%, rgba(0,0,0,0.25) 50.5%, transparent 50.5%);
-}
-.card-collage::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--campus);
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 60%);
 }
 
 .account-header {
@@ -504,14 +497,41 @@ main {
 }
 .account-cta:hover { background: var(--campus); color: #fff; }
 
-/* Metrics grid */
+/* Metrics grid — inside card-body left column */
 .account-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   padding: 1.25rem 1.5rem;
   gap: 1.25rem 1rem;
-  border-bottom: 1px solid var(--border);
+  align-content: start;
 }
+/* Reach breakdown sub-row */
+.reach-split {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.3rem;
+  flex-wrap: wrap;
+}
+.reach-split-item {
+  font-size: 0.68rem;
+  color: var(--fg-muted);
+  font-weight: 300;
+}
+.reach-split-item strong {
+  font-weight: 500;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+.reach-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-top: 0.4rem;
+  overflow: hidden;
+  display: flex;
+}
+.reach-bar-followers { background: var(--campus); }
+.reach-bar-nonfollowers { background: var(--border); }
 .metric-label {
   font-size: 0.6rem;
   font-weight: 500;

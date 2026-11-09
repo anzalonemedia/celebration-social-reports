@@ -399,60 +399,53 @@ main {
   background: var(--campus);
 }
 
-/* Campus photo header */
-.card-photo {
-  height: 180px;
-  background-size: cover;
-  background-position: center;
+/* Card body: metrics left, image right */
+.card-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: 220px;
+}
+@media (max-width: 700px) {
+  .card-body { grid-template-columns: 1fr; }
+  .card-image { height: 200px; }
+}
+
+/* Right-side image */
+.card-image {
   position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
 }
-.card-photo-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,
-    rgba(0,0,0,0) 40%,
-    rgba(0,0,0,0.45) 100%);
-}
-.card-photo::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--campus);
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 /* txcelebration 4-panel collage */
 .card-collage {
-  height: 200px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   position: relative;
   overflow: hidden;
+  height: 100%;
+  min-height: 220px;
+  border-left: 1px solid var(--border);
 }
 .collage-panel {
   background-size: cover;
   background-position: center;
-  transition: transform .4s ease;
 }
-.collage-panel:nth-child(1) { background-position: center 40%; }
-.collage-panel:nth-child(2) { background-position: center 30%; }
-.collage-panel:nth-child(3) { background-position: center 50%; }
+.collage-panel:nth-child(1) { background-position: center 40%; border-right: 1px solid rgba(0,0,0,0.15); border-bottom: 1px solid rgba(0,0,0,0.15); }
+.collage-panel:nth-child(2) { background-position: center 30%; border-bottom: 1px solid rgba(0,0,0,0.15); }
+.collage-panel:nth-child(3) { background-position: center 50%; border-right: 1px solid rgba(0,0,0,0.15); }
 .collage-panel:nth-child(4) { background-position: center 60%; }
 .collage-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%),
-    linear-gradient(to right, transparent 49.5%, rgba(0,0,0,0.25) 49.5%, rgba(0,0,0,0.25) 50.5%, transparent 50.5%),
-    linear-gradient(to bottom, transparent 49.5%, rgba(0,0,0,0.25) 49.5%, rgba(0,0,0,0.25) 50.5%, transparent 50.5%);
-}
-.card-collage::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--campus);
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 60%);
 }
 
 .account-header {
@@ -504,14 +497,41 @@ main {
 }
 .account-cta:hover { background: var(--campus); color: #fff; }
 
-/* Metrics grid */
+/* Metrics grid — inside card-body left column */
 .account-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   padding: 1.25rem 1.5rem;
   gap: 1.25rem 1rem;
-  border-bottom: 1px solid var(--border);
+  align-content: start;
 }
+/* Reach breakdown sub-row */
+.reach-split {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.3rem;
+  flex-wrap: wrap;
+}
+.reach-split-item {
+  font-size: 0.68rem;
+  color: var(--fg-muted);
+  font-weight: 300;
+}
+.reach-split-item strong {
+  font-weight: 500;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+.reach-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-top: 0.4rem;
+  overflow: hidden;
+  display: flex;
+}
+.reach-bar-followers { background: var(--campus); }
+.reach-bar-nonfollowers { background: var(--border); }
 .metric-label {
   font-size: 0.6rem;
   font-weight: 500;
@@ -654,7 +674,7 @@ main {
 
     <div class="report-eyebrow" id="tf-eyebrow">28-Day Performance · Oct 12 – Nov 8, 2026</div>
     <h1 class="report-title">November 2, 2026 – November 8, 2026</h1>
-    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 3:30 PM · 6 of 6 accounts</div>
+    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 3:35 PM · 6 of 6 accounts</div>
 
     <div class="header-stats">
       <div class="header-stat">
@@ -775,14 +795,7 @@ main {
     <div class="section-label">Account Breakdown</div>
     <div class="accounts-grid">
       <div class="account-card" style="--campus:#282829" data-account="@txcelebration">
-        
-        <div class="card-collage">
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_ca.jpg')"></div>
-          <div class="collage-overlay"></div>
-        </div>
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:#282829">
@@ -796,33 +809,49 @@ main {
           <a class="account-cta" href="https://www.instagram.com/txcelebration/" target="_blank" rel="noopener">View Profile</a>
         </div>
         
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="@txcelebration" data-acct-metric="views">555.3K</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="views">555.3K</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="reach">200.3K</div>
+              <div class="reach-split">
+                <span class="reach-split-item"><strong>9.6K</strong> followers</span>
+                <span class="reach-split-item"><strong>190.1K</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:5%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="engagement">29.3K</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="eng_rate">5.28%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">+661</div>
+              <div class="metric-delta up">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">6 posts + 21 stories</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="@txcelebration" data-acct-metric="reach">200.3K</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="@txcelebration" data-acct-metric="engagement">29.3K</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="@txcelebration" data-acct-metric="eng_rate">5.28%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">+661</div>
-            <div class="metric-delta up">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">6 posts + 21 stories</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          <div class="card-collage">
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_ca.jpg')"></div>
+          <div class="collage-overlay"></div>
+        </div>
         </div>
         
         <div class="top-post-wrap">
@@ -842,10 +871,7 @@ main {
         </div>
       </div>
       <div class="account-card" style="--campus:#b8b120" data-account="@wave.students">
-        
-        <div class="card-photo" style="background-image:url('../assets/campus/wave.jpg')">
-          <div class="card-photo-gradient"></div>
-        </div>
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:#b8b120">
@@ -859,33 +885,43 @@ main {
           <a class="account-cta" href="https://www.instagram.com/wave.students/" target="_blank" rel="noopener">View Profile</a>
         </div>
         
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="@wave.students" data-acct-metric="views">250.1K</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="@wave.students" data-acct-metric="views">250.1K</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="@wave.students" data-acct-metric="reach">25.8K</div>
+              <div class="reach-split">
+                <span class="reach-split-item"><strong>3.6K</strong> followers</span>
+                <span class="reach-split-item"><strong>22.7K</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:14%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="@wave.students" data-acct-metric="engagement">7.8K</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="@wave.students" data-acct-metric="eng_rate">3.12%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">+3</div>
+              <div class="metric-delta up">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">26 stories</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="@wave.students" data-acct-metric="reach">25.8K</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="@wave.students" data-acct-metric="engagement">7.8K</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="@wave.students" data-acct-metric="eng_rate">3.12%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">+3</div>
-            <div class="metric-delta up">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">26 stories</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          <div class="card-image"><img src="../assets/campus/wave.jpg" alt="Wave Students" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -905,10 +941,7 @@ main {
         </div>
       </div>
       <div class="account-card" style="--campus:#3554c5" data-account="@celebration.georgetown">
-        
-        <div class="card-photo" style="background-image:url('../assets/campus/georgetown.jpg')">
-          <div class="card-photo-gradient"></div>
-        </div>
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:#3554c5">
@@ -922,33 +955,43 @@ main {
           <a class="account-cta" href="https://www.instagram.com/celebration.georgetown/" target="_blank" rel="noopener">View Profile</a>
         </div>
         
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="views">110.4K</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="views">110.4K</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="reach">11.5K</div>
+              <div class="reach-split">
+                <span class="reach-split-item"><strong>703</strong> followers</span>
+                <span class="reach-split-item"><strong>10.9K</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:6%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="engagement">3.9K</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="eng_rate">3.53%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">+87</div>
+              <div class="metric-delta up">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">4 posts + 10 stories</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="reach">11.5K</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="engagement">3.9K</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="eng_rate">3.53%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">+87</div>
-            <div class="metric-delta up">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">4 posts + 10 stories</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          <div class="card-image"><img src="../assets/campus/georgetown.jpg" alt="Celebration Georgetown" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -968,10 +1011,7 @@ main {
         </div>
       </div>
       <div class="account-card" style="--campus:#646a40" data-account="@celebration.leander">
-        
-        <div class="card-photo" style="background-image:url('../assets/campus/leander.jpg')">
-          <div class="card-photo-gradient"></div>
-        </div>
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:#646a40">
@@ -985,41 +1025,48 @@ main {
           <a class="account-cta" href="https://www.instagram.com/celebration.leander/" target="_blank" rel="noopener">View Profile</a>
         </div>
         
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="views">54.3K</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="views">54.3K</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="reach">6.6K</div>
+              <div class="reach-split">
+                <span class="reach-split-item"><strong>912</strong> followers</span>
+                <span class="reach-split-item"><strong>5.8K</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:14%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="engagement">1.7K</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="eng_rate">3.13%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">+15</div>
+              <div class="metric-delta up">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">2 posts + 7 stories</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="reach">6.6K</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="engagement">1.7K</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="eng_rate">3.13%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">+15</div>
-            <div class="metric-delta up">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">2 posts + 7 stories</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          <div class="card-image"><img src="../assets/campus/leander.jpg" alt="Celebration Leander" loading="lazy"></div>
         </div>
         
       </div>
       <div class="account-card" style="--campus:#e65228" data-account="@celebration.centralaustin">
-        
-        <div class="card-photo" style="background-image:url('../assets/campus/centralaustin.jpg')">
-          <div class="card-photo-gradient"></div>
-        </div>
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:#e65228">
@@ -1033,33 +1080,43 @@ main {
           <a class="account-cta" href="https://www.instagram.com/celebration.centralaustin/" target="_blank" rel="noopener">View Profile</a>
         </div>
         
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="views">41.2K</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="views">41.2K</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="reach">2.8K</div>
+              <div class="reach-split">
+                <span class="reach-split-item"><strong>714</strong> followers</span>
+                <span class="reach-split-item"><strong>2.1K</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:26%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="engagement">746</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="eng_rate">1.81%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">-1</div>
+              <div class="metric-delta down">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">26 stories</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="reach">2.8K</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="engagement">746</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="eng_rate">1.81%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">-1</div>
-            <div class="metric-delta down">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">26 stories</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          <div class="card-image"><img src="../assets/campus/centralaustin.jpg" alt="Celebration Central Austin" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -1079,10 +1136,7 @@ main {
         </div>
       </div>
       <div class="account-card" style="--campus:#a5c2c0" data-account="@celebration.laketravis">
-        
-        <div class="card-photo" style="background-image:url('../assets/campus/laketravis.jpg')">
-          <div class="card-photo-gradient"></div>
-        </div>
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:#a5c2c0">
@@ -1096,33 +1150,43 @@ main {
           <a class="account-cta" href="https://www.instagram.com/celebration.laketravis/" target="_blank" rel="noopener">View Profile</a>
         </div>
         
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="views">34.0K</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="views">34.0K</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="reach">1.8K</div>
+              <div class="reach-split">
+                <span class="reach-split-item"><strong>355</strong> followers</span>
+                <span class="reach-split-item"><strong>1.5K</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:20%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="engagement">924</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="eng_rate">2.72%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">+10</div>
+              <div class="metric-delta up">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">12 stories</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="reach">1.8K</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="engagement">924</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="eng_rate">2.72%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">+10</div>
-            <div class="metric-delta up">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">12 stories</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          <div class="card-image"><img src="../assets/campus/laketravis.jpg" alt="Celebration Lake Travis" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">

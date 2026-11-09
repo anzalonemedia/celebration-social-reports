@@ -45,13 +45,12 @@ ACCOUNT_DATA = [
         "platform": "ig",
         "handle": "@txcelebration",
         "profile_url": "https://www.instagram.com/txcelebration/",
-        # 7-day (derived from daily breakdown: last 7 of 28 daily values)
         "d7_views": 153654, "d7_reach": 57873, "d7_engagement": 6511,
-        # 28-day
         "impressions":  555300,
         "reach":        200300,
+        "reach_followers":    9556,   # from scraped data
+        "reach_nonfollowers": 190144,
         "engagement":   29300,
-        # 90-day (Aug 11 – Nov 8, 2026)
         "d90_views": 1400000, "d90_reach": 274500, "d90_engagement": 54800,
         "new_followers": 661,
         "followers":    0,
@@ -73,6 +72,8 @@ ACCOUNT_DATA = [
         "d7_views": 77963, "d7_reach": 22925, "d7_engagement": 2317,
         "impressions":  250100,
         "reach":        25800,
+        "reach_followers":    3636,
+        "reach_nonfollowers": 22719,
         "engagement":   7800,
         "d90_views": 854000, "d90_reach": 90800, "d90_engagement": 27700,
         "new_followers": 3,
@@ -95,6 +96,8 @@ ACCOUNT_DATA = [
         "d7_views": 45521, "d7_reach": 10712, "d7_engagement": 1780,
         "impressions":  110400,
         "reach":        11500,
+        "reach_followers":    703,
+        "reach_nonfollowers": 10888,
         "engagement":   3900,
         "d90_views": 254900, "d90_reach": 20600, "d90_engagement": 8900,
         "new_followers": 87,
@@ -117,6 +120,8 @@ ACCOUNT_DATA = [
         "d7_views": 8999, "d7_reach": 2895, "d7_engagement": 203,
         "impressions":  54300,
         "reach":        6600,
+        "reach_followers":    912,
+        "reach_nonfollowers": 5844,
         "engagement":   1700,
         "d90_views": 192100, "d90_reach": 13600, "d90_engagement": 6300,
         "new_followers": 15,
@@ -133,6 +138,8 @@ ACCOUNT_DATA = [
         "d7_views": 11943, "d7_reach": 1797, "d7_engagement": 138,
         "impressions":  41200,
         "reach":        2800,
+        "reach_followers":    714,
+        "reach_nonfollowers": 2110,
         "engagement":   746,
         "d90_views": 173500, "d90_reach": 7800, "d90_engagement": 4700,
         "new_followers": -1,
@@ -155,6 +162,8 @@ ACCOUNT_DATA = [
         "d7_views": 7747, "d7_reach": 1831, "d7_engagement": 95,
         "impressions":  34000,
         "reach":        1800,
+        "reach_followers":    355,
+        "reach_nonfollowers": 1460,
         "engagement":   924,
         "d90_views": 165200, "d90_reach": 5800, "d90_engagement": 5300,
         "new_followers": 10,
@@ -266,8 +275,7 @@ def build():
 
         # txcelebration gets a 4-panel collage
         if a["handle"] == "@txcelebration":
-            photo_header = """
-        <div class="card-collage">
+            photo_col = """<div class="card-collage">
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
@@ -275,17 +283,14 @@ def build():
           <div class="collage-overlay"></div>
         </div>"""
         elif campus_img:
-            photo_header = f"""
-        <div class="card-photo" style="background-image:url('{campus_img}')">
-          <div class="card-photo-gradient"></div>
-        </div>"""
+            photo_col = f'<div class="card-image"><img src="{campus_img}" alt="{a["name"]}" loading="lazy"></div>'
         else:
-            photo_header = '<div class="account-card-top"></div>'
+            photo_col = ""
 
         handle_safe = a["handle"].replace("@","").replace(".","_")
         account_cards += f"""
       <div class="account-card" style="--campus:{campus_color}" data-account="{a['handle']}">
-        {photo_header}
+        <div class="account-card-top"></div>
         <div class="account-header">
           <div class="account-header-left">
             <div class="campus-badge" style="background:{campus_color}">
@@ -299,33 +304,43 @@ def build():
           <a class="account-cta" href="{profile_url}" target="_blank" rel="noopener">View Profile</a>
         </div>
         {err_banner}
-        <div class="account-metrics">
-          <div>
-            <div class="metric-label">Views</div>
-            <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="views">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
+        <div class="card-body">
+          <div class="account-metrics">
+            <div>
+              <div class="metric-label">Views</div>
+              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="views">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
+            </div>
+            <div>
+              <div class="metric-label">Reach</div>
+              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(a['reach']) if a['reach'] else '—'}</div>
+              {f'''<div class="reach-split">
+                <span class="reach-split-item"><strong>{fmt_num(a.get("reach_followers",0))}</strong> followers</span>
+                <span class="reach-split-item"><strong>{fmt_num(a.get("reach_nonfollowers",0))}</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:{round(a.get("reach_followers",0)/a["reach"]*100) if a["reach"] else 0}%"></div>
+              </div>''' if a.get("reach") else ''}
+            </div>
+            <div>
+              <div class="metric-label">Interactions</div>
+              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="engagement">{fmt_num(a['engagement']) if a['engagement'] else '—'}</div>
+            </div>
+            <div>
+              <div class="metric-label">Eng. Rate</div>
+              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="eng_rate">{eng_rate}%</div>
+            </div>
+            <div>
+              <div class="metric-label">Net Followers</div>
+              <div class="metric-value">{delta_str(nf) if nf else '—'}</div>
+              <div class="metric-delta {delta_class(nf)}">this period</div>
+            </div>
+            <div>
+              <div class="metric-label">Content</div>
+              <div class="metric-value" style="font-size:0.95rem">{content_label}</div>
+              <div class="metric-sub">posts + stories</div>
+            </div>
           </div>
-          <div>
-            <div class="metric-label">Reach</div>
-            <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(a['reach']) if a['reach'] else '—'}</div>
-          </div>
-          <div>
-            <div class="metric-label">Interactions</div>
-            <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="engagement">{fmt_num(a['engagement']) if a['engagement'] else '—'}</div>
-          </div>
-          <div>
-            <div class="metric-label">Eng. Rate</div>
-            <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="eng_rate">{eng_rate}%</div>
-          </div>
-          <div>
-            <div class="metric-label">Net Followers</div>
-            <div class="metric-value">{delta_str(nf) if nf else '—'}</div>
-            <div class="metric-delta {delta_class(nf)}">this period</div>
-          </div>
-          <div>
-            <div class="metric-label">Content</div>
-            <div class="metric-value" style="font-size:0.95rem">{content_label}</div>
-            <div class="metric-sub">posts + stories</div>
-          </div>
+          {photo_col}
         </div>
         {top_html}
       </div>"""
