@@ -227,8 +227,126 @@ def build():
         <div class="bar-value">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
       </div>"""
 
-    # Cards
-    account_cards = ""
+    # ── Per-account content scores from content audit (Nov 2–8, 2026) ────────
+    CONTENT_SCORES = {
+        "@txcelebration":            {"posts": 5, "score": 7.6, "read": "Strongest feed: Scripture, real people, links"},
+        "@wave.students":            {"posts": 7, "score": 5.1, "read": "Seven posts for one night, mostly logistics"},
+        "@celebration.georgetown":   {"posts": 3, "score": 4.3, "read": "Strong photos, 'Celebration Family' copy"},
+        "@celebration.leander":      {"posts": 1, "score": 4.0, "read": "Sunday recap posted on Tuesday"},
+        "@celebration.centralaustin":{"posts": 0, "score": None, "read": "No post of its own since Oct 17"},
+        "@celebration.laketravis":   {"posts": 0, "score": None, "read": "No post of its own since Oct 7"},
+    }
+
+    # Per-account AI insights
+    ACCOUNT_INSIGHTS = {
+        "@txcelebration": {
+            "summary": "Main campus led the network with a <strong>7.6/10</strong> content score — the highest of any account. "
+                       "5 feed posts anchored by real people and scripture performed well. "
+                       "The standout was Pastor Jackson's Philippians 4:8 clip (<strong>9/10</strong>): one verse, one idea, a link. "
+                       "Pastor Joe's selfie invitation (<strong>7/10</strong>) drove the week's most likes (685) and 31 shares — "
+                       "but the caption opened with 'Hey church!!' and had no times or newcomer invite.",
+            "wins": [
+                "Pastor Jackson's Philippians 4:8 post: 566 likes, 26 comments, 27 shares",
+                "Non-follower reach at 190K+ — content is breaking beyond existing audience",
+                "Scripture and real people in frame = top-performing combination",
+            ],
+            "fixes": [
+                "Start captions with WHY before logistics — 'Mind won't slow down? Try this verse for one week.'",
+                "Pastor Joe invitation: add all campus times + 'bring someone' to the caption",
+                "Collab WAVE United and big ministry nights onto the main feed for parent reach",
+            ],
+        },
+        "@wave.students": {
+            "summary": "WAVE posted 7 times in one week — all for WAVE United Rodeo night (Nov 8). "
+                       "Photos were full of real students. Copy was nearly all logistics, only one post "
+                       "said why a student should come. Best post: 'WAVE UNITED is so fun!!!' (<strong>8/10</strong>) "
+                       "— real hug photo, list of fun things, then worship and message with time + address. "
+                       "WAVE United never reached the main feed — the biggest student night of fall was "
+                       "invisible to parents.",
+            "wins": [
+                "'WAVE UNITED is so fun' post hit 8/10 — real people, clear why + where",
+                "7 posts showed consistent energy and real student moments",
+                "26 stories kept students engaged throughout the week",
+            ],
+            "fixes": [
+                "Lead with WHY before the activity list — 'One night for every student in our church'",
+                "Collab major events onto @txcelebration so parents and the broader church see it",
+                "Add 1 feed post per week outside events to build consistent audience between nights",
+            ],
+        },
+        "@celebration.georgetown": {
+            "summary": "Georgetown posted 3 times and averaged <strong>4.3/10</strong>. Photos were strong — "
+                       "real people, well lit. The copy defaulted to 'Celebration Family' on all three "
+                       "captions, which reads as insider language and closes the door to newcomers. "
+                       "The Pursuit Night recap went up Friday evening, two days after the event. "
+                       "The pastor invite collab drove the week's best reach for this campus (7.1K).",
+            "wins": [
+                "Strong photo quality — real people in real moments",
+                "Pastor invite collab reached 7,100 accounts — highest single-post reach",
+                "+87 net new followers this period, highest growth rate across all campus accounts",
+            ],
+            "fixes": [
+                "Drop 'Celebration Family' — replace with specific, newcomer-friendly language",
+                "Post Sunday recap on Sunday, not Friday — timing matters for algorithmic reach",
+                "Add times, address, and 'new here? plan your visit' to service-time posts",
+            ],
+        },
+        "@celebration.leander": {
+            "summary": "Leander posted once: a warm lobby photo of a woman hugging a little girl, captioned "
+                       "'What a great Sunday!' — posted Tuesday at 4:04 PM, two days after Sunday (<strong>4/10</strong>). "
+                       "The photo had real emotional pull; the caption gave no reason to come, no time, no place. "
+                       "15 net new followers suggest organic discovery is happening — there's an audience "
+                       "ready for more consistent content.",
+            "wins": [
+                "Real, emotionally warm photo — the right visual instinct",
+                "+15 net new followers despite minimal posting",
+                "Stories strategy (7) kept engagement active through the week",
+            ],
+            "fixes": [
+                "Post Sunday recap on Sunday afternoon — timing is content",
+                "Caption formula: [why it matters] + [times] + [address] + [plan your visit link]",
+                "Aim for 2–3 feed posts/week: Sunday recap, mid-week moment, and an invite",
+            ],
+        },
+        "@celebration.centralaustin": {
+            "summary": "Central Austin published <strong>no original feed posts</strong> this week — or in the "
+                       "three weeks prior (last post Oct 17). The only content on the grid is a main-account "
+                       "collab from Oct 23. 26 stories went out, so the account is active, but the feed "
+                       "has gone dark. This contributed to the week's only net-negative follower count (-1). "
+                       "An account with 2,704 followers and no feed posts is leaving significant reach on the table.",
+            "wins": [
+                "26 stories published — team is active and creating content",
+                "2,704 followers represent a real local audience worth engaging",
+                "Engagement rate on stories appears strong relative to account size",
+            ],
+            "fixes": [
+                "Post at minimum 1 original feed post per week — a local photo with a real person + Sunday times",
+                "Sunday recap post every Sunday — this alone would re-activate the feed algorithm",
+                "Avoid collab-only feeds; campus accounts need their own voice",
+            ],
+        },
+        "@celebration.laketravis": {
+            "summary": "Lake Travis has not published an original feed post since Oct 7 — over a month. "
+                       "Like Central Austin, 12 stories ran this week, but the grid is effectively dormant. "
+                       "With 854 followers and 34K views this period (from stories + collabs), there's clear "
+                       "interest in this campus. A weekly local photo post would meaningfully extend that reach "
+                       "beyond the existing audience.",
+            "wins": [
+                "34K views despite no feed posts — stories are driving real impressions",
+                "Engagement rate (2.72%) is decent for the account's size",
+                "+10 net new followers this period — people are finding and following",
+            ],
+            "fixes": [
+                "Resume feed posting immediately — 1 original post per week minimum",
+                "Lead with a photo of a real person + 'See you Sunday' + campus times",
+                "Sunday recap post on Sunday: 'This is Sunday at Lake Travis' + join us next week",
+            ],
+        },
+    }
+
+    # Cards and tab nav
+    account_tab_nav = ""
+    account_panels = ""
     for a in ACCOUNT_DATA:
         nf = a["new_followers"]
         eng_rate = round((a["engagement"] / a["impressions"] * 100) if a["impressions"] else 0, 2)
@@ -285,56 +403,252 @@ def build():
         nf_display = delta_str(nf) if nf is not None else "—"
         nf_class   = delta_class(nf) if nf is not None else "neutral"
 
-        account_cards += f"""
-      <div class="account-card" style="--campus:{campus_color}" data-account="{a['handle']}">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
+        # Tab nav button
+        cs = CONTENT_SCORES.get(a["handle"], {})
+        score_badge = f" · {cs['score']}/10" if cs.get("score") else ""
+        is_first = (a == ACCOUNT_DATA[0])
+        panel_id = a["handle"].replace("@","").replace(".","_")
+        account_tab_nav += f'<button class="acct-tab-btn{" active" if is_first else ""}" data-panel="{panel_id}" style="--campus:{campus_color}">{a["handle"]}{score_badge}</button>\n'
+
+        # Per-account AI insight block
+        insight = ACCOUNT_INSIGHTS.get(a["handle"], {})
+        wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in insight.get("wins", []))
+        fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in insight.get("fixes", []))
+        score_display = f"{cs['score']}/10" if cs.get("score") else "—"
+
+        card_html = f"""<div class="account-card" style="--campus:{campus_color}" data-account="{a['handle']}">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:{campus_color}">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">{a['name']}</div>
+                <div class="account-handle">{a['handle']}</div>
+              </div>
+            </div>
+            <a class="account-cta" href="{profile_url}" target="_blank" rel="noopener">View Profile</a>
+          </div>
+          {err_banner}
+          <div class="card-body">
+            {bg_html}
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="views">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(r28) if r28 else '—'}</div>
+                {reach_breakdown}
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="engagement">{fmt_num(a['engagement']) if a['engagement'] else '—'}</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="eng_rate">{eng_rate}%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">{nf_display}</div>
+                <div class="metric-delta {nf_class}">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">{content_label}</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
+            </div>
+          </div>
+        </div>"""
+
+        insight_html = f"""<div class="acct-insight">
+          <div class="acct-insight-header">
             <div class="campus-badge" style="background:{campus_color}">
               <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
             </div>
             <div>
-              <div class="account-name">{a['name']}</div>
-              <div class="account-handle">{a['handle']}</div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">{a['name']} — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · {cs.get('posts',0)} original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:{campus_color}">{score_display}</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>{insight.get('summary','No summary available.')}</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets">{wins_html}</div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets">{fixes_html}</div>
             </div>
           </div>
-          <a class="account-cta" href="{profile_url}" target="_blank" rel="noopener">View Profile</a>
-        </div>
-        {err_banner}
-        <div class="card-body">
-          {bg_html}
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="views">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
-            </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(r28) if r28 else '—'}</div>
-              {reach_breakdown}
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="engagement">{fmt_num(a['engagement']) if a['engagement'] else '—'}</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="eng_rate">{eng_rate}%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">{nf_display}</div>
-              <div class="metric-delta {nf_class}">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">{content_label}</div>
-              <div class="metric-sub">posts + stories</div>
-            </div>
-          </div>
-        </div>
-        {top_html}
+        </div>"""
+
+        account_panels += f"""<div class="acct-panel{' active' if is_first else ''}" id="panel-{panel_id}">
+        {card_html}
+        {insight_html}
       </div>"""
+
+    # Add scoring tab button
+    account_tab_nav += '<button class="acct-tab-btn scoring-btn" data-panel="scoring">⭐ Scoring</button>\n'
+
+    # ── Scoring panel ────────────────────────────────────────────────────────
+    # Per-account scores for the grid
+    acct_score_cells = ""
+    for a in ACCOUNT_DATA:
+        cs = CONTENT_SCORES.get(a["handle"], {})
+        color = CAMPUS_COLORS.get(a["handle"], "#3554c5")
+        s = cs.get("score")
+        score_disp = f"{s}" if s else "—"
+        acct_score_cells += f"""<div class="acct-score-cell" style="--campus:{color}">
+          <div class="acct-score-badge" style="background:{color}">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">{a['name']}</div>
+            <div class="acct-score-handle">{a['handle']}</div>
+          </div>
+          <div class="acct-score-num" style="color:{color}">{score_disp}</div>
+        </div>"""
+
+    scoring_panel = f"""<div class="acct-panel" id="panel-scoring">
+      <div class="scoring-panel">
+
+        <!-- Score hero -->
+        <div class="score-hero">
+          <div>
+            <div class="score-num">5.1<span class="score-denom">/10</span></div>
+          </div>
+          <div class="score-hero-text">
+            <h2>Week of Nov 2–8: We're informing people, not yet motivating them.</h2>
+            <p>20 original posts scored across all TX Celebration accounts: 4 Motivating (8–10), 7 Informing (5–7), 9 Noise (0–4).
+            Photos and service times are solid. Words rarely say why it matters or invite someone new.
+            Weakest dimensions: "Points to Christ, Church or Calling" (avg 0.50/2) and "Door open to someone new" (avg 0.65/2).</p>
+          </div>
+        </div>
+
+        <!-- Wins + Fixes -->
+        <div class="score-cols">
+          <div class="score-col wins">
+            <h3>✅ What's working</h3>
+            <div class="score-item">
+              <span class="score-icon">🎯</span>
+              <div class="score-item-text">
+                <strong>Pastor Jackson's Philippians 4:8 clip (9/10)</strong>
+                <span>566 likes, 26 comments, 27 shares — one verse, one idea, a link. No insider language.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">📸</span>
+              <div class="score-item-text">
+                <strong>Real people in real moments</strong>
+                <span>Top-performing posts across every account had actual faces — hugs, families, students in action.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">📊</span>
+              <div class="score-item-text">
+                <strong>Non-follower reach at 228K</strong>
+                <span>Content is reaching new audiences. Discovery is happening — especially through @txcelebration and Georgetown.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">🤝</span>
+              <div class="score-item-text">
+                <strong>Pastor Joe's selfie invite drove the week's most likes (685)</strong>
+                <span>Personal, authentic, face-to-camera. Proof the audience responds to pastoral voice.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">🌊</span>
+              <div class="score-item-text">
+                <strong>WAVE United energy was real</strong>
+                <span>"WAVE UNITED is so fun!!!" post (8/10) — real student hug, fun list, time + address. Right instinct.</span>
+              </div>
+            </div>
+          </div>
+          <div class="score-col fixes">
+            <h3>🔧 Three fixes this week</h3>
+            <div class="score-item">
+              <span class="score-icon">1️⃣</span>
+              <div class="score-item-text">
+                <strong>Start every caption with WHY before logistics</strong>
+                <span>One line of Christ, Church or Calling before the times and address. Drop "Celebration Family."
+                Communications + each ministry's social lead — by Fri Nov 13.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">2️⃣</span>
+              <div class="score-item-text">
+                <strong>Film Pastor Joe's weekly invite + collab ministry nights to main</strong>
+                <span>WAVE United never reached the main feed. Big student nights should live where parents are.
+                Communications + Pastor Joe — by Sat Nov 14.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">3️⃣</span>
+              <div class="score-item-text">
+                <strong>Central Austin + Lake Travis: one local photo post each</strong>
+                <span>Real person + Sunday times. Post Sunday recap on Sunday — not Tuesday.
+                Location Pastors — by Sun Nov 15.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Values check -->
+        <div class="score-col" style="border-radius:12px">
+          <h3 style="color:var(--fg-muted);margin-bottom:1rem">Values &amp; Mission Check</h3>
+          <div class="score-item">
+            <span class="score-icon">✅</span>
+            <div class="score-item-text"><strong>Jesus is our Pursuit</strong> <span>— Clear · Pursuit Night, Radianté recap</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">✅</span>
+            <div class="score-item-text"><strong>Scripture is our Authority</strong> <span>— Clear · Pastor Jackson's Philippians 4:8 clip</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">❌</span>
+            <div class="score-item-text"><strong>The Holy Spirit is our Power</strong> <span>— Missing · Not seen this week</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">✅</span>
+            <div class="score-item-text"><strong>People are our Heart</strong> <span>— Clear · Hugs, families, Pastor Joe's invitation</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">🟡</span>
+            <div class="score-item-text"><strong>Service is our Privilege</strong> <span>— Shown, not named · Parking volunteer in the rain (main, Nov 8)</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">❌</span>
+            <div class="score-item-text"><strong>Generosity is our Lifestyle</strong> <span>— Missing · Not seen this week</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">🟡</span>
+            <div class="score-item-text"><strong>Flourishing is our Goal</strong> <span>— Partly · Radianté recap: women + leaders equipped in Mozambique</span></div>
+          </div>
+        </div>
+
+        <!-- Per-account score grid -->
+        <div>
+          <div class="section-label" style="margin-bottom:0.75rem">Account Scores · Content Audit (Nov 2–8)</div>
+          <div class="acct-scores-grid">{acct_score_cells}</div>
+          <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:0.75rem;font-weight:300">
+            Scoring: 5 questions × 2 pts each = 10 pts max. 8–10 = Motivating, 5–7 = Informing, 0–4 = Noise.
+            Questions: scroll-stopping photo · one clear message · points to Christ/Church/Calling · door open to newcomers · clear next step.
+          </p>
+        </div>
+
+      </div>
+    </div>"""
+
+    account_panels += scoring_panel
 
     period_label = "Oct 12 – Nov 8, 2026"
 
@@ -481,7 +795,9 @@ def build():
         .replace("{{FOLLOW_DELTA_CLASS}}",delta_class(net_followers)) \
         .replace("{{PERIOD_LABEL}}",     period_label) \
         .replace("{{REACH_BARS}}",       reach_bars) \
-        .replace("{{ACCOUNT_CARDS}}",    account_cards) \
+        .replace("{{ACCOUNT_TAB_NAV}}",  account_tab_nav) \
+        .replace("{{ACCOUNT_PANELS}}",   account_panels) \
+        .replace("{{ACCOUNT_CARDS}}",    "") \
         .replace("{{AI_SUMMARY}}",       ai_summary) \
         .replace("TIMEFRAME_DATA",       json.dumps(tf_data))
 

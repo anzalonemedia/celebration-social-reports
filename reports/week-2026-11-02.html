@@ -379,14 +379,39 @@ main {
   color: var(--fg-muted);
 }
 
-/* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
-.accounts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+/* ── ACCOUNT TABS ─────────────────────────────────────────────────────────── */
+.acct-tab-nav {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
 }
-@media (max-width: 700px) {
-  .accounts-grid { grid-template-columns: 1fr; }
+.acct-tab-btn {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.acct-tab-btn:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+.acct-tab-btn.active { background: var(--campus, var(--blue)); border-color: var(--campus, var(--blue)); color: #fff; }
+.acct-tab-btn.scoring-btn.active { background: var(--black); border-color: var(--black); color: #fff; }
+.acct-tab-btn.scoring-btn:hover:not(.active) { border-color: var(--black); color: var(--fg); }
+
+.acct-panel { display: none; flex-direction: column; gap: 1.25rem; }
+.acct-panel.active { display: flex; }
+
+/* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
+.account-card {
+  /* formerly wrapped in .accounts-grid — now each panel holds one card */
 }
 
 .account-card {
@@ -633,6 +658,111 @@ main {
 }
 .top-post-link:hover { text-decoration: underline; }
 
+/* ── PER-ACCOUNT AI INSIGHT ───────────────────────────────────────────────── */
+.acct-insight {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.acct-insight-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  border-bottom: 1px solid var(--border); padding-bottom: 1rem;
+}
+.acct-insight-header h3 {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 400;
+}
+.acct-insight-header .insight-label {
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--fg-muted);
+  margin-top: 0.1rem;
+}
+.insight-score-pill {
+  margin-left: auto; flex-shrink: 0;
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 400;
+  background: var(--campus, var(--blue)); color: #fff;
+  border-radius: 8px; padding: 0.25rem 0.65rem;
+}
+.acct-insight-body {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+@media (max-width: 600px) { .acct-insight-body { grid-template-columns: 1fr; } }
+.insight-col h4 {
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--fg-muted); margin-bottom: 0.5rem;
+}
+.insight-col p { font-size: 0.82rem; line-height: 1.65; color: var(--fg-muted); font-weight: 300; }
+.insight-col p strong { color: var(--fg); font-weight: 500; }
+.insight-bullets { display: flex; flex-direction: column; gap: 0.4rem; }
+.insight-bullet {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  font-size: 0.8rem; line-height: 1.5; color: var(--fg-muted); font-weight: 300;
+}
+.insight-bullet::before { content: "→"; color: var(--campus, var(--blue)); flex-shrink: 0; font-weight: 500; }
+
+/* ── SCORING TAB ──────────────────────────────────────────────────────────── */
+.scoring-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+.score-hero {
+  background: var(--black); color: #fff; border-radius: 12px;
+  padding: 2rem; display: flex; align-items: center; gap: 2rem;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.score-num {
+  font-family: var(--font-display); font-size: 5rem; line-height: 1;
+  font-weight: 400; letter-spacing: -0.03em; color: var(--yellow);
+  flex-shrink: 0;
+}
+.score-denom { font-size: 1.5rem; color: rgba(255,255,255,0.3); }
+.score-hero-text h2 {
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 400;
+  color: #fff; margin-bottom: 0.4rem;
+}
+.score-hero-text p { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+.score-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@media (max-width: 600px) { .score-cols { grid-template-columns: 1fr; } }
+.score-col {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem;
+}
+.score-col h3 {
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 1rem;
+}
+.score-col.wins h3 { color: #2a7a4f; }
+.score-col.fixes h3 { color: #b05000; }
+.score-item {
+  display: flex; align-items: flex-start; gap: 0.65rem;
+  padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+  font-size: 0.82rem; line-height: 1.5;
+}
+.score-item:last-child { border-bottom: none; padding-bottom: 0; }
+.score-icon { flex-shrink: 0; font-size: 0.9rem; margin-top: 0.05rem; }
+.score-item-text strong { font-weight: 500; display: block; color: var(--fg); font-size: 0.82rem; }
+.score-item-text span { font-weight: 300; color: var(--fg-muted); font-size: 0.78rem; }
+.acct-scores-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+@media (max-width: 600px) { .acct-scores-grid { grid-template-columns: 1fr 1fr; } }
+.acct-score-cell {
+  background: var(--card); padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.acct-score-badge {
+  width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 0.95rem; color: #fff;
+}
+.acct-score-name { font-size: 0.72rem; font-weight: 450; color: var(--fg); }
+.acct-score-handle { font-size: 0.62rem; color: var(--fg-muted); font-weight: 300; }
+.acct-score-num {
+  margin-left: auto; font-family: var(--font-display); font-size: 1.3rem;
+  font-weight: 400; color: var(--campus, var(--blue));
+}
+
 /* ── AI SUMMARY CARD ──────────────────────────────────────────────────────── */
 .ai-summary-card {
   background: var(--card);
@@ -762,6 +892,10 @@ main {
   .campus-badge img { width: 12px !important; height: 12px !important; }
 
   .site-footer { display: none !important; }
+  /* Show all account panels in print */
+  .acct-tab-nav { display: none !important; }
+  .acct-panel { display: flex !important; break-before: auto; }
+  .scoring-panel { break-before: page; }
 }
 
 /* ── FOOTER ───────────────────────────────────────────────────────────────── */
@@ -812,7 +946,7 @@ main {
 
     <div class="report-eyebrow" id="tf-eyebrow">28-Day Performance · Oct 12 – Nov 8, 2026</div>
     <h1 class="report-title">November 2, 2026 – November 8, 2026</h1>
-    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 4:03 PM · 6 of 6 accounts</div>
+    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 4:10 PM · 6 of 6 accounts</div>
 
     <div class="header-stats">
       <div class="header-stat">
@@ -978,351 +1112,686 @@ main {
       </div></div>
   </section>
 
-  <!-- Account breakdown -->
+  <!-- Account breakdown with tabs -->
   <section id="accounts">
     <div class="section-label">Account Breakdown</div>
-    <div class="accounts-grid">
-      <div class="account-card" style="--campus:#282829" data-account="@txcelebration">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
-            <div class="campus-badge" style="background:#282829">
-              <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+    <div class="acct-tab-nav"><button class="acct-tab-btn active" data-panel="txcelebration" style="--campus:#282829">@txcelebration · 7.6/10</button>
+<button class="acct-tab-btn" data-panel="wave_students" style="--campus:#b8b120">@wave.students · 5.1/10</button>
+<button class="acct-tab-btn" data-panel="celebration_georgetown" style="--campus:#3554c5">@celebration.georgetown · 4.3/10</button>
+<button class="acct-tab-btn" data-panel="celebration_leander" style="--campus:#646a40">@celebration.leander · 4.0/10</button>
+<button class="acct-tab-btn" data-panel="celebration_centralaustin" style="--campus:#e65228">@celebration.centralaustin</button>
+<button class="acct-tab-btn" data-panel="celebration_laketravis" style="--campus:#a5c2c0">@celebration.laketravis</button>
+<button class="acct-tab-btn scoring-btn" data-panel="scoring">⭐ Scoring</button>
+</div>
+    <div class="acct-panel active" id="panel-txcelebration">
+        <div class="account-card" style="--campus:#282829" data-account="@txcelebration">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:#282829">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">Celebration Church (TX)</div>
+                <div class="account-handle">@txcelebration</div>
+              </div>
             </div>
-            <div>
-              <div class="account-name">Celebration Church (TX)</div>
-              <div class="account-handle">@txcelebration</div>
-            </div>
+            <a class="account-cta" href="https://www.instagram.com/txcelebration/" target="_blank" rel="noopener">View Profile</a>
           </div>
-          <a class="account-cta" href="https://www.instagram.com/txcelebration/" target="_blank" rel="noopener">View Profile</a>
-        </div>
-        
-        <div class="card-body">
-          <div class="card-collage-bg">
+          
+          <div class="card-body">
+            <div class="card-collage-bg">
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_ca.jpg')"></div>
         </div>
         <div class="card-bg-gradient"></div>
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="views">555.3K</div>
-            </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="reach">200.3K</div>
-              <div class="reach-split">
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="@txcelebration" data-acct-metric="views">555.3K</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="@txcelebration" data-acct-metric="reach">200.3K</div>
+                <div class="reach-split">
                 <span class="reach-split-item"><strong>9.6K</strong> followers</span>
                 <span class="reach-split-item"><strong>190.7K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:5%"></div>
               </div>
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="engagement">29.3K</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="@txcelebration" data-acct-metric="eng_rate">5.28%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">+661</div>
-              <div class="metric-delta up">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">6 posts + 21 stories</div>
-              <div class="metric-sub">posts + stories</div>
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="@txcelebration" data-acct-metric="engagement">29.3K</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="@txcelebration" data-acct-metric="eng_rate">5.28%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">+661</div>
+                <div class="metric-delta up">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">6 posts + 21 stories</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
             </div>
           </div>
         </div>
-        
-      </div>
-      <div class="account-card" style="--campus:#b8b120" data-account="@wave.students">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
-            <div class="campus-badge" style="background:#b8b120">
+        <div class="acct-insight">
+          <div class="acct-insight-header">
+            <div class="campus-badge" style="background:#282829">
               <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
             </div>
             <div>
-              <div class="account-name">Wave Students</div>
-              <div class="account-handle">@wave.students</div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">Celebration Church (TX) — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · 5 original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:#282829">7.6/10</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>Main campus led the network with a <strong>7.6/10</strong> content score — the highest of any account. 5 feed posts anchored by real people and scripture performed well. The standout was Pastor Jackson's Philippians 4:8 clip (<strong>9/10</strong>): one verse, one idea, a link. Pastor Joe's selfie invitation (<strong>7/10</strong>) drove the week's most likes (685) and 31 shares — but the caption opened with 'Hey church!!' and had no times or newcomer invite.</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Pastor Jackson's Philippians 4:8 post: 566 likes, 26 comments, 27 shares</div><div class="insight-bullet">Non-follower reach at 190K+ — content is breaking beyond existing audience</div><div class="insight-bullet">Scripture and real people in frame = top-performing combination</div></div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Start captions with WHY before logistics — 'Mind won't slow down? Try this verse for one week.'</div><div class="insight-bullet">Pastor Joe invitation: add all campus times + 'bring someone' to the caption</div><div class="insight-bullet">Collab WAVE United and big ministry nights onto the main feed for parent reach</div></div>
             </div>
           </div>
-          <a class="account-cta" href="https://www.instagram.com/wave.students/" target="_blank" rel="noopener">View Profile</a>
         </div>
-        
-        <div class="card-body">
-          <div class="card-bg-image" style="background-image:url('../assets/campus/wave.jpg')"></div>
-        <div class="card-bg-gradient"></div>
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="@wave.students" data-acct-metric="views">250.1K</div>
+      </div><div class="acct-panel" id="panel-wave_students">
+        <div class="account-card" style="--campus:#b8b120" data-account="@wave.students">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:#b8b120">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">Wave Students</div>
+                <div class="account-handle">@wave.students</div>
+              </div>
             </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="@wave.students" data-acct-metric="reach">25.8K</div>
-              <div class="reach-split">
+            <a class="account-cta" href="https://www.instagram.com/wave.students/" target="_blank" rel="noopener">View Profile</a>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-bg-image" style="background-image:url('../assets/campus/wave.jpg')"></div>
+        <div class="card-bg-gradient"></div>
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="@wave.students" data-acct-metric="views">250.1K</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="@wave.students" data-acct-metric="reach">25.8K</div>
+                <div class="reach-split">
                 <span class="reach-split-item"><strong>3.6K</strong> followers</span>
                 <span class="reach-split-item"><strong>22.2K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:14%"></div>
               </div>
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="@wave.students" data-acct-metric="engagement">7.8K</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="@wave.students" data-acct-metric="eng_rate">3.12%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">+3</div>
-              <div class="metric-delta up">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">26 stories</div>
-              <div class="metric-sub">posts + stories</div>
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="@wave.students" data-acct-metric="engagement">7.8K</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="@wave.students" data-acct-metric="eng_rate">3.12%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">+3</div>
+                <div class="metric-delta up">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">26 stories</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
             </div>
           </div>
         </div>
-        
-      </div>
-      <div class="account-card" style="--campus:#3554c5" data-account="@celebration.georgetown">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
-            <div class="campus-badge" style="background:#3554c5">
+        <div class="acct-insight">
+          <div class="acct-insight-header">
+            <div class="campus-badge" style="background:#b8b120">
               <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
             </div>
             <div>
-              <div class="account-name">Celebration Georgetown</div>
-              <div class="account-handle">@celebration.georgetown</div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">Wave Students — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · 7 original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:#b8b120">5.1/10</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>WAVE posted 7 times in one week — all for WAVE United Rodeo night (Nov 8). Photos were full of real students. Copy was nearly all logistics, only one post said why a student should come. Best post: 'WAVE UNITED is so fun!!!' (<strong>8/10</strong>) — real hug photo, list of fun things, then worship and message with time + address. WAVE United never reached the main feed — the biggest student night of fall was invisible to parents.</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets"><div class="insight-bullet">'WAVE UNITED is so fun' post hit 8/10 — real people, clear why + where</div><div class="insight-bullet">7 posts showed consistent energy and real student moments</div><div class="insight-bullet">26 stories kept students engaged throughout the week</div></div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Lead with WHY before the activity list — 'One night for every student in our church'</div><div class="insight-bullet">Collab major events onto @txcelebration so parents and the broader church see it</div><div class="insight-bullet">Add 1 feed post per week outside events to build consistent audience between nights</div></div>
             </div>
           </div>
-          <a class="account-cta" href="https://www.instagram.com/celebration.georgetown/" target="_blank" rel="noopener">View Profile</a>
         </div>
-        
-        <div class="card-body">
-          <div class="card-bg-image" style="background-image:url('../assets/campus/georgetown.jpg')"></div>
-        <div class="card-bg-gradient"></div>
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="views">110.4K</div>
+      </div><div class="acct-panel" id="panel-celebration_georgetown">
+        <div class="account-card" style="--campus:#3554c5" data-account="@celebration.georgetown">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:#3554c5">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">Celebration Georgetown</div>
+                <div class="account-handle">@celebration.georgetown</div>
+              </div>
             </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="reach">11.5K</div>
-              <div class="reach-split">
+            <a class="account-cta" href="https://www.instagram.com/celebration.georgetown/" target="_blank" rel="noopener">View Profile</a>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-bg-image" style="background-image:url('../assets/campus/georgetown.jpg')"></div>
+        <div class="card-bg-gradient"></div>
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="views">110.4K</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="reach">11.5K</div>
+                <div class="reach-split">
                 <span class="reach-split-item"><strong>703</strong> followers</span>
                 <span class="reach-split-item"><strong>10.9K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:6%"></div>
               </div>
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="engagement">3.9K</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="eng_rate">3.53%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">+87</div>
-              <div class="metric-delta up">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">4 posts + 10 stories</div>
-              <div class="metric-sub">posts + stories</div>
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="engagement">3.9K</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="@celebration.georgetown" data-acct-metric="eng_rate">3.53%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">+87</div>
+                <div class="metric-delta up">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">4 posts + 10 stories</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
             </div>
           </div>
         </div>
-        
-      </div>
-      <div class="account-card" style="--campus:#646a40" data-account="@celebration.leander">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
-            <div class="campus-badge" style="background:#646a40">
+        <div class="acct-insight">
+          <div class="acct-insight-header">
+            <div class="campus-badge" style="background:#3554c5">
               <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
             </div>
             <div>
-              <div class="account-name">Celebration Leander</div>
-              <div class="account-handle">@celebration.leander</div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">Celebration Georgetown — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · 3 original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:#3554c5">4.3/10</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>Georgetown posted 3 times and averaged <strong>4.3/10</strong>. Photos were strong — real people, well lit. The copy defaulted to 'Celebration Family' on all three captions, which reads as insider language and closes the door to newcomers. The Pursuit Night recap went up Friday evening, two days after the event. The pastor invite collab drove the week's best reach for this campus (7.1K).</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Strong photo quality — real people in real moments</div><div class="insight-bullet">Pastor invite collab reached 7,100 accounts — highest single-post reach</div><div class="insight-bullet">+87 net new followers this period, highest growth rate across all campus accounts</div></div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Drop 'Celebration Family' — replace with specific, newcomer-friendly language</div><div class="insight-bullet">Post Sunday recap on Sunday, not Friday — timing matters for algorithmic reach</div><div class="insight-bullet">Add times, address, and 'new here? plan your visit' to service-time posts</div></div>
             </div>
           </div>
-          <a class="account-cta" href="https://www.instagram.com/celebration.leander/" target="_blank" rel="noopener">View Profile</a>
         </div>
-        
-        <div class="card-body">
-          <div class="card-bg-image" style="background-image:url('../assets/campus/leander.jpg')"></div>
-        <div class="card-bg-gradient"></div>
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="views">54.3K</div>
+      </div><div class="acct-panel" id="panel-celebration_leander">
+        <div class="account-card" style="--campus:#646a40" data-account="@celebration.leander">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:#646a40">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">Celebration Leander</div>
+                <div class="account-handle">@celebration.leander</div>
+              </div>
             </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="reach">6.6K</div>
-              <div class="reach-split">
+            <a class="account-cta" href="https://www.instagram.com/celebration.leander/" target="_blank" rel="noopener">View Profile</a>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-bg-image" style="background-image:url('../assets/campus/leander.jpg')"></div>
+        <div class="card-bg-gradient"></div>
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="views">54.3K</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="reach">6.6K</div>
+                <div class="reach-split">
                 <span class="reach-split-item"><strong>912</strong> followers</span>
                 <span class="reach-split-item"><strong>5.7K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:14%"></div>
               </div>
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="engagement">1.7K</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="eng_rate">3.13%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">+15</div>
-              <div class="metric-delta up">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">2 posts + 7 stories</div>
-              <div class="metric-sub">posts + stories</div>
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="engagement">1.7K</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="eng_rate">3.13%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">+15</div>
+                <div class="metric-delta up">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">2 posts + 7 stories</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
             </div>
           </div>
         </div>
-        
-      </div>
-      <div class="account-card" style="--campus:#e65228" data-account="@celebration.centralaustin">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
-            <div class="campus-badge" style="background:#e65228">
+        <div class="acct-insight">
+          <div class="acct-insight-header">
+            <div class="campus-badge" style="background:#646a40">
               <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
             </div>
             <div>
-              <div class="account-name">Celebration Central Austin</div>
-              <div class="account-handle">@celebration.centralaustin</div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">Celebration Leander — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · 1 original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:#646a40">4.0/10</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>Leander posted once: a warm lobby photo of a woman hugging a little girl, captioned 'What a great Sunday!' — posted Tuesday at 4:04 PM, two days after Sunday (<strong>4/10</strong>). The photo had real emotional pull; the caption gave no reason to come, no time, no place. 15 net new followers suggest organic discovery is happening — there's an audience ready for more consistent content.</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Real, emotionally warm photo — the right visual instinct</div><div class="insight-bullet">+15 net new followers despite minimal posting</div><div class="insight-bullet">Stories strategy (7) kept engagement active through the week</div></div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Post Sunday recap on Sunday afternoon — timing is content</div><div class="insight-bullet">Caption formula: [why it matters] + [times] + [address] + [plan your visit link]</div><div class="insight-bullet">Aim for 2–3 feed posts/week: Sunday recap, mid-week moment, and an invite</div></div>
             </div>
           </div>
-          <a class="account-cta" href="https://www.instagram.com/celebration.centralaustin/" target="_blank" rel="noopener">View Profile</a>
         </div>
-        
-        <div class="card-body">
-          <div class="card-bg-image" style="background-image:url('../assets/campus/centralaustin.jpg')"></div>
-        <div class="card-bg-gradient"></div>
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="views">41.2K</div>
+      </div><div class="acct-panel" id="panel-celebration_centralaustin">
+        <div class="account-card" style="--campus:#e65228" data-account="@celebration.centralaustin">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:#e65228">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">Celebration Central Austin</div>
+                <div class="account-handle">@celebration.centralaustin</div>
+              </div>
             </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="reach">2.8K</div>
-              <div class="reach-split">
+            <a class="account-cta" href="https://www.instagram.com/celebration.centralaustin/" target="_blank" rel="noopener">View Profile</a>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-bg-image" style="background-image:url('../assets/campus/centralaustin.jpg')"></div>
+        <div class="card-bg-gradient"></div>
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="views">41.2K</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="reach">2.8K</div>
+                <div class="reach-split">
                 <span class="reach-split-item"><strong>714</strong> followers</span>
                 <span class="reach-split-item"><strong>2.1K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:26%"></div>
               </div>
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="engagement">746</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="eng_rate">1.81%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">-1</div>
-              <div class="metric-delta down">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">26 stories</div>
-              <div class="metric-sub">posts + stories</div>
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="engagement">746</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="@celebration.centralaustin" data-acct-metric="eng_rate">1.81%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">-1</div>
+                <div class="metric-delta down">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">26 stories</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
             </div>
           </div>
         </div>
-        
-      </div>
-      <div class="account-card" style="--campus:#a5c2c0" data-account="@celebration.laketravis">
-        <div class="account-card-top"></div>
-        <div class="account-header">
-          <div class="account-header-left">
-            <div class="campus-badge" style="background:#a5c2c0">
+        <div class="acct-insight">
+          <div class="acct-insight-header">
+            <div class="campus-badge" style="background:#e65228">
               <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
             </div>
             <div>
-              <div class="account-name">Celebration Lake Travis</div>
-              <div class="account-handle">@celebration.laketravis</div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">Celebration Central Austin — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · 0 original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:#e65228">—</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>Central Austin published <strong>no original feed posts</strong> this week — or in the three weeks prior (last post Oct 17). The only content on the grid is a main-account collab from Oct 23. 26 stories went out, so the account is active, but the feed has gone dark. This contributed to the week's only net-negative follower count (-1). An account with 2,704 followers and no feed posts is leaving significant reach on the table.</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets"><div class="insight-bullet">26 stories published — team is active and creating content</div><div class="insight-bullet">2,704 followers represent a real local audience worth engaging</div><div class="insight-bullet">Engagement rate on stories appears strong relative to account size</div></div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Post at minimum 1 original feed post per week — a local photo with a real person + Sunday times</div><div class="insight-bullet">Sunday recap post every Sunday — this alone would re-activate the feed algorithm</div><div class="insight-bullet">Avoid collab-only feeds; campus accounts need their own voice</div></div>
             </div>
           </div>
-          <a class="account-cta" href="https://www.instagram.com/celebration.laketravis/" target="_blank" rel="noopener">View Profile</a>
         </div>
-        
-        <div class="card-body">
-          <div class="card-bg-image" style="background-image:url('../assets/campus/laketravis.jpg')"></div>
-        <div class="card-bg-gradient"></div>
-          <div class="account-metrics">
-            <div>
-              <div class="metric-label">Views</div>
-              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="views">34.0K</div>
+      </div><div class="acct-panel" id="panel-celebration_laketravis">
+        <div class="account-card" style="--campus:#a5c2c0" data-account="@celebration.laketravis">
+          <div class="account-card-top"></div>
+          <div class="account-header">
+            <div class="account-header-left">
+              <div class="campus-badge" style="background:#a5c2c0">
+                <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+              </div>
+              <div>
+                <div class="account-name">Celebration Lake Travis</div>
+                <div class="account-handle">@celebration.laketravis</div>
+              </div>
             </div>
-            <div>
-              <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="reach">1.8K</div>
-              <div class="reach-split">
+            <a class="account-cta" href="https://www.instagram.com/celebration.laketravis/" target="_blank" rel="noopener">View Profile</a>
+          </div>
+          
+          <div class="card-body">
+            <div class="card-bg-image" style="background-image:url('../assets/campus/laketravis.jpg')"></div>
+        <div class="card-bg-gradient"></div>
+            <div class="account-metrics">
+              <div>
+                <div class="metric-label">Views</div>
+                <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="views">34.0K</div>
+              </div>
+              <div>
+                <div class="metric-label">Reach</div>
+                <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="reach">1.8K</div>
+                <div class="reach-split">
                 <span class="reach-split-item"><strong>355</strong> followers</span>
                 <span class="reach-split-item"><strong>1.5K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:20%"></div>
               </div>
-            </div>
-            <div>
-              <div class="metric-label">Interactions</div>
-              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="engagement">924</div>
-            </div>
-            <div>
-              <div class="metric-label">Eng. Rate</div>
-              <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="eng_rate">2.72%</div>
-            </div>
-            <div>
-              <div class="metric-label">Net Followers</div>
-              <div class="metric-value">+10</div>
-              <div class="metric-delta up">28-day period</div>
-            </div>
-            <div>
-              <div class="metric-label">Content</div>
-              <div class="metric-value" style="font-size:0.95rem">12 stories</div>
-              <div class="metric-sub">posts + stories</div>
+              </div>
+              <div>
+                <div class="metric-label">Interactions</div>
+                <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="engagement">924</div>
+              </div>
+              <div>
+                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-value" data-acct="@celebration.laketravis" data-acct-metric="eng_rate">2.72%</div>
+              </div>
+              <div>
+                <div class="metric-label">Net Followers</div>
+                <div class="metric-value">+10</div>
+                <div class="metric-delta up">28-day period</div>
+              </div>
+              <div>
+                <div class="metric-label">Content</div>
+                <div class="metric-value" style="font-size:0.95rem">12 stories</div>
+                <div class="metric-sub">posts + stories</div>
+              </div>
             </div>
           </div>
         </div>
-        
-      </div></div>
+        <div class="acct-insight">
+          <div class="acct-insight-header">
+            <div class="campus-badge" style="background:#a5c2c0">
+              <img src="../assets/pebble.png" alt="" style="width:22px;height:22px;filter:brightness(0) invert(1)">
+            </div>
+            <div>
+              <div style="font-family:var(--font-display);font-size:1rem;font-weight:400">Celebration Lake Travis — Content Audit</div>
+              <div class="insight-label">Week of Nov 2–8, 2026 · 0 original posts · AI content scoring</div>
+            </div>
+            <div class="insight-score-pill" style="background:#a5c2c0">—</div>
+          </div>
+          <div class="acct-insight-body">
+            <div class="insight-col">
+              <h4>Summary</h4>
+              <p>Lake Travis has not published an original feed post since Oct 7 — over a month. Like Central Austin, 12 stories ran this week, but the grid is effectively dormant. With 854 followers and 34K views this period (from stories + collabs), there's clear interest in this campus. A weekly local photo post would meaningfully extend that reach beyond the existing audience.</p>
+            </div>
+            <div class="insight-col">
+              <h4>What's working</h4>
+              <div class="insight-bullets"><div class="insight-bullet">34K views despite no feed posts — stories are driving real impressions</div><div class="insight-bullet">Engagement rate (2.72%) is decent for the account's size</div><div class="insight-bullet">+10 net new followers this period — people are finding and following</div></div>
+              <h4 style="margin-top:1rem">Fix this week</h4>
+              <div class="insight-bullets"><div class="insight-bullet">Resume feed posting immediately — 1 original post per week minimum</div><div class="insight-bullet">Lead with a photo of a real person + 'See you Sunday' + campus times</div><div class="insight-bullet">Sunday recap post on Sunday: 'This is Sunday at Lake Travis' + join us next week</div></div>
+            </div>
+          </div>
+        </div>
+      </div><div class="acct-panel" id="panel-scoring">
+      <div class="scoring-panel">
+
+        <!-- Score hero -->
+        <div class="score-hero">
+          <div>
+            <div class="score-num">5.1<span class="score-denom">/10</span></div>
+          </div>
+          <div class="score-hero-text">
+            <h2>Week of Nov 2–8: We're informing people, not yet motivating them.</h2>
+            <p>20 original posts scored across all TX Celebration accounts: 4 Motivating (8–10), 7 Informing (5–7), 9 Noise (0–4).
+            Photos and service times are solid. Words rarely say why it matters or invite someone new.
+            Weakest dimensions: "Points to Christ, Church or Calling" (avg 0.50/2) and "Door open to someone new" (avg 0.65/2).</p>
+          </div>
+        </div>
+
+        <!-- Wins + Fixes -->
+        <div class="score-cols">
+          <div class="score-col wins">
+            <h3>✅ What's working</h3>
+            <div class="score-item">
+              <span class="score-icon">🎯</span>
+              <div class="score-item-text">
+                <strong>Pastor Jackson's Philippians 4:8 clip (9/10)</strong>
+                <span>566 likes, 26 comments, 27 shares — one verse, one idea, a link. No insider language.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">📸</span>
+              <div class="score-item-text">
+                <strong>Real people in real moments</strong>
+                <span>Top-performing posts across every account had actual faces — hugs, families, students in action.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">📊</span>
+              <div class="score-item-text">
+                <strong>Non-follower reach at 228K</strong>
+                <span>Content is reaching new audiences. Discovery is happening — especially through @txcelebration and Georgetown.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">🤝</span>
+              <div class="score-item-text">
+                <strong>Pastor Joe's selfie invite drove the week's most likes (685)</strong>
+                <span>Personal, authentic, face-to-camera. Proof the audience responds to pastoral voice.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">🌊</span>
+              <div class="score-item-text">
+                <strong>WAVE United energy was real</strong>
+                <span>"WAVE UNITED is so fun!!!" post (8/10) — real student hug, fun list, time + address. Right instinct.</span>
+              </div>
+            </div>
+          </div>
+          <div class="score-col fixes">
+            <h3>🔧 Three fixes this week</h3>
+            <div class="score-item">
+              <span class="score-icon">1️⃣</span>
+              <div class="score-item-text">
+                <strong>Start every caption with WHY before logistics</strong>
+                <span>One line of Christ, Church or Calling before the times and address. Drop "Celebration Family."
+                Communications + each ministry's social lead — by Fri Nov 13.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">2️⃣</span>
+              <div class="score-item-text">
+                <strong>Film Pastor Joe's weekly invite + collab ministry nights to main</strong>
+                <span>WAVE United never reached the main feed. Big student nights should live where parents are.
+                Communications + Pastor Joe — by Sat Nov 14.</span>
+              </div>
+            </div>
+            <div class="score-item">
+              <span class="score-icon">3️⃣</span>
+              <div class="score-item-text">
+                <strong>Central Austin + Lake Travis: one local photo post each</strong>
+                <span>Real person + Sunday times. Post Sunday recap on Sunday — not Tuesday.
+                Location Pastors — by Sun Nov 15.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Values check -->
+        <div class="score-col" style="border-radius:12px">
+          <h3 style="color:var(--fg-muted);margin-bottom:1rem">Values &amp; Mission Check</h3>
+          <div class="score-item">
+            <span class="score-icon">✅</span>
+            <div class="score-item-text"><strong>Jesus is our Pursuit</strong> <span>— Clear · Pursuit Night, Radianté recap</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">✅</span>
+            <div class="score-item-text"><strong>Scripture is our Authority</strong> <span>— Clear · Pastor Jackson's Philippians 4:8 clip</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">❌</span>
+            <div class="score-item-text"><strong>The Holy Spirit is our Power</strong> <span>— Missing · Not seen this week</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">✅</span>
+            <div class="score-item-text"><strong>People are our Heart</strong> <span>— Clear · Hugs, families, Pastor Joe's invitation</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">🟡</span>
+            <div class="score-item-text"><strong>Service is our Privilege</strong> <span>— Shown, not named · Parking volunteer in the rain (main, Nov 8)</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">❌</span>
+            <div class="score-item-text"><strong>Generosity is our Lifestyle</strong> <span>— Missing · Not seen this week</span></div>
+          </div>
+          <div class="score-item">
+            <span class="score-icon">🟡</span>
+            <div class="score-item-text"><strong>Flourishing is our Goal</strong> <span>— Partly · Radianté recap: women + leaders equipped in Mozambique</span></div>
+          </div>
+        </div>
+
+        <!-- Per-account score grid -->
+        <div>
+          <div class="section-label" style="margin-bottom:0.75rem">Account Scores · Content Audit (Nov 2–8)</div>
+          <div class="acct-scores-grid"><div class="acct-score-cell" style="--campus:#282829">
+          <div class="acct-score-badge" style="background:#282829">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">Celebration Church (TX)</div>
+            <div class="acct-score-handle">@txcelebration</div>
+          </div>
+          <div class="acct-score-num" style="color:#282829">7.6</div>
+        </div><div class="acct-score-cell" style="--campus:#b8b120">
+          <div class="acct-score-badge" style="background:#b8b120">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">Wave Students</div>
+            <div class="acct-score-handle">@wave.students</div>
+          </div>
+          <div class="acct-score-num" style="color:#b8b120">5.1</div>
+        </div><div class="acct-score-cell" style="--campus:#3554c5">
+          <div class="acct-score-badge" style="background:#3554c5">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">Celebration Georgetown</div>
+            <div class="acct-score-handle">@celebration.georgetown</div>
+          </div>
+          <div class="acct-score-num" style="color:#3554c5">4.3</div>
+        </div><div class="acct-score-cell" style="--campus:#646a40">
+          <div class="acct-score-badge" style="background:#646a40">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">Celebration Leander</div>
+            <div class="acct-score-handle">@celebration.leander</div>
+          </div>
+          <div class="acct-score-num" style="color:#646a40">4.0</div>
+        </div><div class="acct-score-cell" style="--campus:#e65228">
+          <div class="acct-score-badge" style="background:#e65228">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">Celebration Central Austin</div>
+            <div class="acct-score-handle">@celebration.centralaustin</div>
+          </div>
+          <div class="acct-score-num" style="color:#e65228">—</div>
+        </div><div class="acct-score-cell" style="--campus:#a5c2c0">
+          <div class="acct-score-badge" style="background:#a5c2c0">
+            <img src="../assets/pebble.png" alt="" style="width:16px;height:16px;filter:brightness(0) invert(1)">
+          </div>
+          <div>
+            <div class="acct-score-name">Celebration Lake Travis</div>
+            <div class="acct-score-handle">@celebration.laketravis</div>
+          </div>
+          <div class="acct-score-num" style="color:#a5c2c0">—</div>
+        </div></div>
+          <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:0.75rem;font-weight:300">
+            Scoring: 5 questions × 2 pts each = 10 pts max. 8–10 = Motivating, 5–7 = Informing, 0–4 = Noise.
+            Questions: scroll-stopping photo · one clear message · points to Christ/Church/Calling · door open to newcomers · clear next step.
+          </p>
+        </div>
+
+      </div>
+    </div>
   </section>
 
 </main>
@@ -1352,6 +1821,17 @@ function exportPDF() {
     document.title = orig;
   }, 100);
 }
+
+// ── Account tab switching ──────────────────────────────────────────────────
+document.querySelectorAll('.acct-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.acct-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.acct-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('panel-' + btn.dataset.panel);
+    if (panel) panel.classList.add('active');
+  });
+});
 
 // ── Timeframe toggle ───────────────────────────────────────────────────────
 const tfData   = {"7": {"label": "Last 7 Days", "dateRange": "Nov 2 \u2013 Nov 8, 2026", "total_views": "305.8K", "total_engagement": "11.0K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "153.7K", "reach": "57.9K", "engagement": "6.5K", "eng_rate": "4.24%"}, "@wave.students": {"views": "78.0K", "reach": "22.9K", "engagement": "2.3K", "eng_rate": "2.97%"}, "@celebration.georgetown": {"views": "45.5K", "reach": "10.7K", "engagement": "1.8K", "eng_rate": "3.91%"}, "@celebration.leander": {"views": "9.0K", "reach": "2.9K", "engagement": "203", "eng_rate": "2.26%"}, "@celebration.centralaustin": {"views": "11.9K", "reach": "1.8K", "engagement": "138", "eng_rate": "1.16%"}, "@celebration.laketravis": {"views": "7.7K", "reach": "1.8K", "engagement": "95", "eng_rate": "1.23%"}}}, "28": {"label": "Last 28 Days", "dateRange": "Oct 12 \u2013 Nov 8, 2026", "total_views": "1.0M", "total_engagement": "44.4K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "555.3K", "reach": "200.3K", "engagement": "29.3K", "eng_rate": "5.28%"}, "@wave.students": {"views": "250.1K", "reach": "25.8K", "engagement": "7.8K", "eng_rate": "3.12%"}, "@celebration.georgetown": {"views": "110.4K", "reach": "11.5K", "engagement": "3.9K", "eng_rate": "3.53%"}, "@celebration.leander": {"views": "54.3K", "reach": "6.6K", "engagement": "1.7K", "eng_rate": "3.13%"}, "@celebration.centralaustin": {"views": "41.2K", "reach": "2.8K", "engagement": "746", "eng_rate": "1.81%"}, "@celebration.laketravis": {"views": "34.0K", "reach": "1.8K", "engagement": "924", "eng_rate": "2.72%"}}}, "90": {"label": "Last 90 Days", "dateRange": "Aug 11 \u2013 Nov 8, 2026", "total_views": "3.0M", "total_engagement": "107.7K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "1.4M", "reach": "274.5K", "engagement": "54.8K", "eng_rate": "3.91%"}, "@wave.students": {"views": "854.0K", "reach": "90.8K", "engagement": "27.7K", "eng_rate": "3.24%"}, "@celebration.georgetown": {"views": "254.9K", "reach": "20.6K", "engagement": "8.9K", "eng_rate": "3.49%"}, "@celebration.leander": {"views": "192.1K", "reach": "13.6K", "engagement": "6.3K", "eng_rate": "3.28%"}, "@celebration.centralaustin": {"views": "173.5K", "reach": "7.8K", "engagement": "4.7K", "eng_rate": "2.71%"}, "@celebration.laketravis": {"views": "165.2K", "reach": "5.8K", "engagement": "5.3K", "eng_rate": "3.21%"}}}};

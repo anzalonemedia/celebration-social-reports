@@ -379,14 +379,39 @@ main {
   color: var(--fg-muted);
 }
 
-/* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
-.accounts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+/* ── ACCOUNT TABS ─────────────────────────────────────────────────────────── */
+.acct-tab-nav {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
 }
-@media (max-width: 700px) {
-  .accounts-grid { grid-template-columns: 1fr; }
+.acct-tab-btn {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.acct-tab-btn:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+.acct-tab-btn.active { background: var(--campus, var(--blue)); border-color: var(--campus, var(--blue)); color: #fff; }
+.acct-tab-btn.scoring-btn.active { background: var(--black); border-color: var(--black); color: #fff; }
+.acct-tab-btn.scoring-btn:hover:not(.active) { border-color: var(--black); color: var(--fg); }
+
+.acct-panel { display: none; flex-direction: column; gap: 1.25rem; }
+.acct-panel.active { display: flex; }
+
+/* ── ACCOUNT CARDS ────────────────────────────────────────────────────────── */
+.account-card {
+  /* formerly wrapped in .accounts-grid — now each panel holds one card */
 }
 
 .account-card {
@@ -633,6 +658,111 @@ main {
 }
 .top-post-link:hover { text-decoration: underline; }
 
+/* ── PER-ACCOUNT AI INSIGHT ───────────────────────────────────────────────── */
+.acct-insight {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.acct-insight-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  border-bottom: 1px solid var(--border); padding-bottom: 1rem;
+}
+.acct-insight-header h3 {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 400;
+}
+.acct-insight-header .insight-label {
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--fg-muted);
+  margin-top: 0.1rem;
+}
+.insight-score-pill {
+  margin-left: auto; flex-shrink: 0;
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 400;
+  background: var(--campus, var(--blue)); color: #fff;
+  border-radius: 8px; padding: 0.25rem 0.65rem;
+}
+.acct-insight-body {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+}
+@media (max-width: 600px) { .acct-insight-body { grid-template-columns: 1fr; } }
+.insight-col h4 {
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--fg-muted); margin-bottom: 0.5rem;
+}
+.insight-col p { font-size: 0.82rem; line-height: 1.65; color: var(--fg-muted); font-weight: 300; }
+.insight-col p strong { color: var(--fg); font-weight: 500; }
+.insight-bullets { display: flex; flex-direction: column; gap: 0.4rem; }
+.insight-bullet {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  font-size: 0.8rem; line-height: 1.5; color: var(--fg-muted); font-weight: 300;
+}
+.insight-bullet::before { content: "→"; color: var(--campus, var(--blue)); flex-shrink: 0; font-weight: 500; }
+
+/* ── SCORING TAB ──────────────────────────────────────────────────────────── */
+.scoring-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+.score-hero {
+  background: var(--black); color: #fff; border-radius: 12px;
+  padding: 2rem; display: flex; align-items: center; gap: 2rem;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.score-num {
+  font-family: var(--font-display); font-size: 5rem; line-height: 1;
+  font-weight: 400; letter-spacing: -0.03em; color: var(--yellow);
+  flex-shrink: 0;
+}
+.score-denom { font-size: 1.5rem; color: rgba(255,255,255,0.3); }
+.score-hero-text h2 {
+  font-family: var(--font-display); font-size: 1.3rem; font-weight: 400;
+  color: #fff; margin-bottom: 0.4rem;
+}
+.score-hero-text p { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+.score-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@media (max-width: 600px) { .score-cols { grid-template-columns: 1fr; } }
+.score-col {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.5rem;
+}
+.score-col h3 {
+  font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 1rem;
+}
+.score-col.wins h3 { color: #2a7a4f; }
+.score-col.fixes h3 { color: #b05000; }
+.score-item {
+  display: flex; align-items: flex-start; gap: 0.65rem;
+  padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+  font-size: 0.82rem; line-height: 1.5;
+}
+.score-item:last-child { border-bottom: none; padding-bottom: 0; }
+.score-icon { flex-shrink: 0; font-size: 0.9rem; margin-top: 0.05rem; }
+.score-item-text strong { font-weight: 500; display: block; color: var(--fg); font-size: 0.82rem; }
+.score-item-text span { font-weight: 300; color: var(--fg-muted); font-size: 0.78rem; }
+.acct-scores-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+@media (max-width: 600px) { .acct-scores-grid { grid-template-columns: 1fr 1fr; } }
+.acct-score-cell {
+  background: var(--card); padding: 1rem 1.25rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.acct-score-badge {
+  width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 0.95rem; color: #fff;
+}
+.acct-score-name { font-size: 0.72rem; font-weight: 450; color: var(--fg); }
+.acct-score-handle { font-size: 0.62rem; color: var(--fg-muted); font-weight: 300; }
+.acct-score-num {
+  margin-left: auto; font-family: var(--font-display); font-size: 1.3rem;
+  font-weight: 400; color: var(--campus, var(--blue));
+}
+
 /* ── AI SUMMARY CARD ──────────────────────────────────────────────────────── */
 .ai-summary-card {
   background: var(--card);
@@ -762,6 +892,10 @@ main {
   .campus-badge img { width: 12px !important; height: 12px !important; }
 
   .site-footer { display: none !important; }
+  /* Show all account panels in print */
+  .acct-tab-nav { display: none !important; }
+  .acct-panel { display: flex !important; break-before: auto; }
+  .scoring-panel { break-before: page; }
 }
 
 /* ── FOOTER ───────────────────────────────────────────────────────────────── */
@@ -904,10 +1038,11 @@ main {
     <div class="bar-chart">{{REACH_BARS}}</div>
   </section>
 
-  <!-- Account breakdown -->
+  <!-- Account breakdown with tabs -->
   <section id="accounts">
     <div class="section-label">Account Breakdown</div>
-    <div class="accounts-grid">{{ACCOUNT_CARDS}}</div>
+    <div class="acct-tab-nav">{{ACCOUNT_TAB_NAV}}</div>
+    {{ACCOUNT_PANELS}}
   </section>
 
 </main>
@@ -937,6 +1072,17 @@ function exportPDF() {
     document.title = orig;
   }, 100);
 }
+
+// ── Account tab switching ──────────────────────────────────────────────────
+document.querySelectorAll('.acct-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.acct-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.acct-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('panel-' + btn.dataset.panel);
+    if (panel) panel.classList.add('active');
+  });
+});
 
 // ── Timeframe toggle ───────────────────────────────────────────────────────
 const tfData   = TIMEFRAME_DATA;
