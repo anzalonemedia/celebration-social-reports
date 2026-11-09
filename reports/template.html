@@ -1161,6 +1161,11 @@ document.querySelectorAll('.tf-btn').forEach(btn => {
 
     // Update period label in nav eyebrow
     if (eyebrow) eyebrow.textContent = `${d.label} · ${d.dateRange}`;
+
+    // Update inline timeframe label chips next to metric names
+    document.querySelectorAll('.tf-label').forEach(el => {
+      el.textContent = btn.dataset.tf === '7' ? '7d' : (btn.dataset.tf === '90' ? '90d' : '28d');
+    });
   });
 });
 </script>

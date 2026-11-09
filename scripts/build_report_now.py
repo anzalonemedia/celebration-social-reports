@@ -400,17 +400,22 @@ def build():
         nf_display = delta_str(nf) if nf is not None else "—"
         nf_class   = delta_class(nf) if nf is not None else "neutral"
 
-        # Top-level tab nav button (data-top= drives the top panel switcher)
-        sc = account_score(a)
+        # Top-level tab nav button
         is_first = (a == ACCOUNT_DATA[0])
         panel_id = a["handle"].replace("@","").replace(".","_")
-        account_tab_nav += f'<button class="top-tab-btn" data-top="{panel_id}" style="--campus:{campus_color}">{a["handle"]} · {sc}/10</button>\n'
+        account_tab_nav += f'<button class="top-tab-btn" data-top="{panel_id}" style="--campus:{campus_color}">{a["handle"]}</button>\n'
 
         # Per-account AI insight block
         insight = account_insight(a, ACCOUNT_DATA)
         wins_html  = "".join(f'<div class="insight-bullet">{w}</div>' for w in insight["wins"])
         fixes_html = "".join(f'<div class="insight-bullet">{f}</div>' for f in insight["fixes"])
-        score_display = f"{sc}/10"
+        score_display = "—"  # content quality score requires post scraping; pending
+
+        # 7-day values for display (show alongside 28-day on the card)
+        d7_views_disp = fmt_num(a.get("d7_views", 0)) if a.get("d7_views") else "—"
+        d7_reach_disp = fmt_num(a.get("d7_reach", 0)) if a.get("d7_reach") else "—"
+        d7_eng_disp   = fmt_num(a.get("d7_engagement", 0)) if a.get("d7_engagement") else "—"
+        d90_views_disp = fmt_num(a.get("d90_views", 0)) if a.get("d90_views") else "—"
 
         card_html = f"""<div class="account-card" style="--campus:{campus_color}" data-account="{a['handle']}">
           <div class="account-card-top"></div>
@@ -431,26 +436,28 @@ def build():
             {bg_html}
             <div class="account-metrics">
               <div>
-                <div class="metric-label">Views</div>
+                <div class="metric-label">Views · <span class="tf-label" data-acct="{a['handle']}">28d</span></div>
                 <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="views">{fmt_num(a['impressions']) if a['impressions'] else '—'}</div>
+                <div class="metric-sub" data-acct="{a['handle']}" data-acct-sub="views">7d: {d7_views_disp} · 90d: {d90_views_disp}</div>
               </div>
               <div>
-                <div class="metric-label">Reach</div>
+                <div class="metric-label">Reach · 28d</div>
                 <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(r28) if r28 else '—'}</div>
                 {reach_breakdown}
               </div>
               <div>
-                <div class="metric-label">Interactions</div>
+                <div class="metric-label">Interactions · <span class="tf-label" data-acct="{a['handle']}">28d</span></div>
                 <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="engagement">{fmt_num(a['engagement']) if a['engagement'] else '—'}</div>
+                <div class="metric-sub">7d: {d7_eng_disp}</div>
               </div>
               <div>
-                <div class="metric-label">Eng. Rate</div>
+                <div class="metric-label">Eng. Rate · 28d</div>
                 <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="eng_rate">{eng_rate}%</div>
               </div>
               <div>
-                <div class="metric-label">Net Followers</div>
+                <div class="metric-label">Net Followers · 28d</div>
                 <div class="metric-value">{nf_display}</div>
-                <div class="metric-delta {nf_class}">28-day period</div>
+                <div class="metric-delta {nf_class}">28-day only</div>
               </div>
               <div>
                 <div class="metric-label">Content</div>
@@ -579,12 +586,17 @@ def build():
 
     scoring_panel = f"""<div class="scoring-panel">
         <div class="score-hero">
-          <div><div class="score-num">{net_score}<span class="score-denom">/10</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:0.25rem">
+            <div class="score-num" style="font-size:3.5rem">{avg_eng_rate}%<span class="score-denom" style="font-size:1.2rem"> eng.</span></div>
+            <div style="font-size:0.65rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Network Avg · 28d</div>
+          </div>
           <div class="score-hero-text">
-            <h2>{score_label}</h2>
+            <h2>Distribution Health · {week_label}</h2>
             <p>{posting_flag} this period. {nf_flag}.
-            Network engagement rate: {avg_eng_rate}%. Net new followers across all accounts: {delta_str(net_followers)}.
-            Score is analytics-driven: engagement rate, non-follower reach ratio, posting activity, and follower growth.</p>
+            {fmt_num(total_nf_reach)} non-follower accounts reached across the network.
+            Net new followers: {delta_str(net_followers)}.
+            <strong style="color:rgba(255,255,255,0.5);font-weight:400;font-size:0.78rem;display:block;margin-top:0.5rem">
+            Content quality scoring requires reading posts — coming Monday with the full automated scraper.</strong></p>
           </div>
         </div>
         <div class="score-cols">
@@ -595,7 +607,8 @@ def build():
           <div class="section-label" style="margin-bottom:0.75rem">Account Scores</div>
           <div class="acct-scores-grid">{acct_score_cells}</div>
           <p style="font-size:0.68rem;color:var(--fg-muted);margin-top:0.75rem;font-weight:300">
-            Score (0–10) = engagement rate + non-follower reach % + posting activity + follower growth. Generated automatically from Meta Business Suite analytics.
+            Distribution health scores only — engagement rate, non-follower reach %, posting activity, follower growth.
+            Content quality scoring (rubric-based, values-checked) will run automatically once the Instagram scraper is live.
           </p>
         </div>
       </div>"""
