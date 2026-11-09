@@ -209,12 +209,13 @@ def build():
     net_followers     = sum(a["new_followers"] for a in scraped)
     avg_eng_rate      = round((total_engagement / total_impressions * 100) if total_impressions else 0, 2)
 
-    best_post_reach, best_post_account = 0, ""
+    best_post_reach, best_post_account, best_post_url = 0, "", ""
     for a in ACCOUNT_DATA:
         tp = a.get("top_post") or {}
         if tp.get("reach", 0) > best_post_reach:
             best_post_reach   = tp["reach"]
             best_post_account = a["name"]
+            best_post_url     = tp.get("url", "")
 
     # Bars
     max_r = max((a["impressions"] for a in ACCOUNT_DATA), default=1) or 1
@@ -418,6 +419,7 @@ def build():
         .replace("{{TOP_PLATFORM}}",     top_account_name) \
         .replace("{{BEST_POST_REACH}}",  fmt_num(best_post_reach)) \
         .replace("{{BEST_POST_ACCOUNT}}",best_post_account) \
+        .replace("{{BEST_POST_URL}}",    best_post_url) \
         .replace("{{TOTAL_FOLLOWERS}}",  "—") \
         .replace("{{FOLLOW_DELTA}}",     delta_str(net_followers)) \
         .replace("{{FOLLOW_DELTA_CLASS}}",delta_class(net_followers)) \
