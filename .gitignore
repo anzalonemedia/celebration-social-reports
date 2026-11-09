@@ -1,0 +1,14 @@
+# Instagram session cookies — never commit, re-generate with --save-cookies
+data/ig_cookies.json
+
+# Scraped post data — regenerated weekly, no need to version
+data/posts_*.json
+data/scores_*.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
