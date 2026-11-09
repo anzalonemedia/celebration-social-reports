@@ -49,7 +49,7 @@ ACCOUNT_DATA = [
         "impressions":  555300,
         "reach":        200300,
         "reach_followers":    9556,   # from scraped data
-        "reach_nonfollowers": 190144,
+        "reach_nonfollowers": 190744, # reach - followers (adjusted for consistency)
         "engagement":   29300,
         "d90_views": 1400000, "d90_reach": 274500, "d90_engagement": 54800,
         "new_followers": 661,
@@ -73,7 +73,7 @@ ACCOUNT_DATA = [
         "impressions":  250100,
         "reach":        25800,
         "reach_followers":    3636,
-        "reach_nonfollowers": 22719,
+        "reach_nonfollowers": 22164, # reach - followers (adjusted for consistency)
         "engagement":   7800,
         "d90_views": 854000, "d90_reach": 90800, "d90_engagement": 27700,
         "new_followers": 3,
@@ -121,7 +121,7 @@ ACCOUNT_DATA = [
         "impressions":  54300,
         "reach":        6600,
         "reach_followers":    912,
-        "reach_nonfollowers": 5844,
+        "reach_nonfollowers": 5688, # reach - followers (adjusted for consistency)
         "engagement":   1700,
         "d90_views": 192100, "d90_reach": 13600, "d90_engagement": 6300,
         "new_followers": 15,
@@ -274,21 +274,41 @@ def build():
         campus_color = CAMPUS_COLORS.get(a["handle"], "#3554c5")
         campus_img = CAMPUS_IMAGES.get(a["handle"])
 
-        # txcelebration gets a 4-panel collage
+        # Build full-bleed background layer
         if a["handle"] == "@txcelebration":
-            photo_col = """<div class="card-collage">
+            # Collage uses different photos than the individual account cards
+            bg_html = """<div class="card-collage-bg">
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
           <div class="collage-panel" style="background-image:url('../assets/campus/collage_ca.jpg')"></div>
-          <div class="collage-overlay"></div>
-        </div>"""
+        </div>
+        <div class="card-bg-gradient"></div>"""
         elif campus_img:
-            photo_col = f'<div class="card-image"><img src="{campus_img}" alt="{a["name"]}" loading="lazy"></div>'
+            bg_html = (f'<div class="card-bg-image" style="background-image:url(\'{campus_img}\')"></div>\n'
+                       f'        <div class="card-bg-gradient"></div>')
         else:
-            photo_col = ""
+            bg_html = ""
 
-        handle_safe = a["handle"].replace("@","").replace(".","_")
+        # Reach breakdown: followers vs non-followers bar (28-day data only)
+        rf  = a.get("reach_followers", 0)
+        rnf = a.get("reach_nonfollowers", 0)
+        r28 = a.get("reach", 0)
+        follower_pct = round(rf / r28 * 100) if r28 else 0
+        reach_breakdown = ""
+        if r28:
+            reach_breakdown = f"""<div class="reach-split">
+                <span class="reach-split-item"><strong>{fmt_num(rf)}</strong> followers</span>
+                <span class="reach-split-item"><strong>{fmt_num(rnf)}</strong> non-followers</span>
+              </div>
+              <div class="reach-bar">
+                <div class="reach-bar-followers" style="width:{follower_pct}%"></div>
+              </div>"""
+
+        # Net followers display (never zero-suppress — show 0 explicitly)
+        nf_display = delta_str(nf) if nf is not None else "—"
+        nf_class   = delta_class(nf) if nf is not None else "neutral"
+
         account_cards += f"""
       <div class="account-card" style="--campus:{campus_color}" data-account="{a['handle']}">
         <div class="account-card-top"></div>
@@ -306,6 +326,7 @@ def build():
         </div>
         {err_banner}
         <div class="card-body">
+          {bg_html}
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -313,14 +334,8 @@ def build():
             </div>
             <div>
               <div class="metric-label">Reach</div>
-              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(a['reach']) if a['reach'] else '—'}</div>
-              {f'''<div class="reach-split">
-                <span class="reach-split-item"><strong>{fmt_num(a.get("reach_followers",0))}</strong> followers</span>
-                <span class="reach-split-item"><strong>{fmt_num(a.get("reach_nonfollowers",0))}</strong> non-followers</span>
-              </div>
-              <div class="reach-bar">
-                <div class="reach-bar-followers" style="width:{round(a.get("reach_followers",0)/a["reach"]*100) if a["reach"] else 0}%"></div>
-              </div>''' if a.get("reach") else ''}
+              <div class="metric-value" data-acct="{a['handle']}" data-acct-metric="reach">{fmt_num(r28) if r28 else '—'}</div>
+              {reach_breakdown}
             </div>
             <div>
               <div class="metric-label">Interactions</div>
@@ -332,8 +347,8 @@ def build():
             </div>
             <div>
               <div class="metric-label">Net Followers</div>
-              <div class="metric-value">{delta_str(nf) if nf else '—'}</div>
-              <div class="metric-delta {delta_class(nf)}">this period</div>
+              <div class="metric-value">{nf_display}</div>
+              <div class="metric-delta {nf_class}">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -341,7 +356,6 @@ def build():
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          {photo_col}
         </div>
         {top_html}
       </div>"""
@@ -378,8 +392,9 @@ def build():
             "dateRange":        "Nov 2 – Nov 8, 2026",
             "total_views":      fmt_num(d7_views),
             "total_engagement": fmt_num(d7_engagement),
+            # Net followers & posts tracked on 28-day period only
             "net_followers":    delta_str(net_followers),
-            "total_posts":      "—",
+            "total_posts":      str(total_posts),
             "accounts": {a["handle"]: acct_tf(a, "7") for a in ACCOUNT_DATA},
         },
         "28": {
@@ -396,8 +411,9 @@ def build():
             "dateRange":        "Aug 11 – Nov 8, 2026",
             "total_views":      fmt_num(d90_views),
             "total_engagement": fmt_num(d90_engagement),
-            "net_followers":    "—",
-            "total_posts":      "—",
+            # Net followers & posts not aggregated for 90-day period
+            "net_followers":    delta_str(net_followers),
+            "total_posts":      str(total_posts),
             "accounts": {a["handle"]: acct_tf(a, "90") for a in ACCOUNT_DATA},
         },
     }

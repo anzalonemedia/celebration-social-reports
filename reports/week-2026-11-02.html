@@ -399,54 +399,76 @@ main {
   background: var(--campus);
 }
 
-/* Card body: metrics left, image right */
+/* Full-bleed card with image background + gradient overlay */
 .card-body {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  min-height: 220px;
-}
-@media (max-width: 700px) {
-  .card-body { grid-template-columns: 1fr; }
-  .card-image { height: 200px; }
-}
-
-/* Right-side image */
-.card-image {
   position: relative;
+  min-height: 260px;
   overflow: hidden;
-  border-left: 1px solid var(--border);
-}
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
 }
 
-/* txcelebration 4-panel collage */
-.card-collage {
+/* Background image layer */
+.card-bg-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.03); /* slight scale prevents edge gaps */
+  transition: transform 6s ease;
+}
+.account-card:hover .card-bg-image { transform: scale(1.06); }
+
+/* Dark gradient over the image — heavier at bottom where metrics live */
+.card-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15) 0%,
+    rgba(0,0,0,0.5)  45%,
+    rgba(0,0,0,0.82) 100%
+  );
+}
+
+/* Metrics sit above the gradient — align to bottom so image shows at top */
+.account-metrics {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  padding: 1.5rem 1.5rem 1.75rem;
+  gap: 1.1rem 1.25rem;
+  align-content: end;
+  min-height: 260px;
+}
+/* Text goes white on the dark overlay */
+.card-body .metric-label  { color: rgba(255,255,255,0.6); }
+.card-body .metric-value  { color: #fff; }
+.card-body .metric-sub    { color: rgba(255,255,255,0.5); }
+.card-body .metric-delta.up      { color: #6be0a0; }
+.card-body .metric-delta.down    { color: #ff8080; }
+.card-body .metric-delta.neutral { color: rgba(255,255,255,0.45); }
+.card-body .reach-split  { gap: 0.6rem; margin-top: 0.25rem; }
+.card-body .reach-split-item     { color: rgba(255,255,255,0.55); font-size: 0.63rem; }
+.card-body .reach-split-item strong { color: rgba(255,255,255,0.9); }
+.card-body .reach-bar            { background: rgba(255,255,255,0.18); margin-top: 0.3rem; }
+.card-body .reach-bar-followers  { background: rgba(255,255,255,0.75); }
+
+/* txcelebration 4-panel collage as background */
+.card-collage-bg {
+  position: absolute;
+  inset: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  min-height: 220px;
-  border-left: 1px solid var(--border);
 }
 .collage-panel {
   background-size: cover;
   background-position: center;
 }
-.collage-panel:nth-child(1) { background-position: center 40%; border-right: 1px solid rgba(0,0,0,0.15); border-bottom: 1px solid rgba(0,0,0,0.15); }
-.collage-panel:nth-child(2) { background-position: center 30%; border-bottom: 1px solid rgba(0,0,0,0.15); }
-.collage-panel:nth-child(3) { background-position: center 50%; border-right: 1px solid rgba(0,0,0,0.15); }
+.collage-panel:nth-child(1) { background-position: center 40%; border-right: 1px solid rgba(0,0,0,0.2); border-bottom: 1px solid rgba(0,0,0,0.2); }
+.collage-panel:nth-child(2) { background-position: center 30%; border-bottom: 1px solid rgba(0,0,0,0.2); }
+.collage-panel:nth-child(3) { background-position: center 50%; border-right: 1px solid rgba(0,0,0,0.2); }
 .collage-panel:nth-child(4) { background-position: center 60%; }
-.collage-overlay {
-  position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(135deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 60%);
-}
 
 .account-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -497,14 +519,7 @@ main {
 }
 .account-cta:hover { background: var(--campus); color: #fff; }
 
-/* Metrics grid — inside card-body left column */
-.account-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  padding: 1.25rem 1.5rem;
-  gap: 1.25rem 1rem;
-  align-content: start;
-}
+/* (duplicate definition removed — see full-bleed .account-metrics above) */
 /* Reach breakdown sub-row */
 .reach-split {
   display: flex;
@@ -610,17 +625,87 @@ main {
 }
 .top-post-link:hover { text-decoration: underline; }
 
-/* ── PRINT / PDF EXPORT ───────────────────────────────────────────────────── */
+/* ── PRINT / PDF EXPORT — data-only, one sheet ────────────────────────────── */
 @media print {
-  @page { size: A4; margin: 16mm 14mm; }
-  .site-nav, .back-link, .export-btn-wrap, .tf-toggle { display: none !important; }
+  @page { size: A4 landscape; margin: 10mm 12mm; }
+
+  /* Hide all chrome and imagery */
+  .site-nav, .back-link, .export-btn-wrap, .tf-toggle,
+  .card-bg-image, .card-bg-gradient, .card-collage-bg,
+  .top-post-wrap, .pebble-mark { display: none !important; }
+
+  /* Tight header */
   .site-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .account-card { break-inside: avoid; }
-  .tiles { break-inside: avoid; }
-  body { font-size: 13px; }
-  .report-title { font-size: 2rem; }
-  main { padding: 1rem 0; gap: 2rem; }
-  .header-inner { padding: 1.5rem 1rem; }
+  .header-inner { padding: 8mm 10mm; }
+  .brand-row { margin-bottom: 6mm; }
+  .report-title { font-size: 1.4rem; }
+  .header-stats { margin-top: 4mm; padding-top: 4mm; gap: 0; flex-wrap: nowrap; }
+  .header-stat { flex: 1; padding-right: 10mm; }
+  .header-stat .stat-num { font-size: 1.3rem; }
+  .header-stat .stat-label { font-size: 0.55rem; }
+
+  /* Compact main layout */
+  body { font-size: 10px; }
+  main { padding: 4mm 10mm; gap: 4mm; }
+  .section-label { margin-bottom: 3mm; padding-bottom: 2mm; font-size: 0.55rem; }
+
+  /* Summary tiles: single row */
+  .tiles {
+    grid-template-columns: repeat(4, 1fr);
+    break-inside: avoid;
+  }
+  .tile { padding: 6mm 8mm; }
+  .tile-value { font-size: 1.1rem; }
+  .tile-delta { font-size: 0.6rem; }
+  .tile-label { font-size: 0.55rem; }
+
+  /* Bar chart compact */
+  .bar-chart { gap: 3mm; }
+  .bar-name { min-width: 120px; max-width: 120px; font-size: 0.65rem; }
+  .bar-value { font-size: 0.65rem; }
+
+  /* Account cards: flat data table — 2-col grid, NO images */
+  .accounts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3mm;
+    break-inside: avoid;
+  }
+  .account-card { break-inside: avoid; border-radius: 4px; }
+  .account-card-top { height: 2px; }
+
+  /* Show metrics in a simple flat grid over transparent background */
+  .card-body {
+    min-height: unset !important;
+    background: transparent !important;
+  }
+  .account-metrics {
+    min-height: unset;
+    align-content: start;
+    padding: 4mm 6mm;
+    gap: 3mm 5mm;
+    color: var(--fg) !important;
+  }
+  /* Override white-text overrides for print */
+  .card-body .metric-label  { color: var(--fg-muted) !important; font-size: 0.5rem; }
+  .card-body .metric-value  { color: var(--fg) !important; font-size: 1rem; }
+  .card-body .metric-sub    { color: var(--fg-muted) !important; }
+  .card-body .metric-delta  { font-size: 0.55rem; }
+  .card-body .metric-delta.up   { color: #2a7a4f !important; }
+  .card-body .metric-delta.down { color: #c03333 !important; }
+  .card-body .reach-split-item  { color: var(--fg-muted) !important; font-size: 0.55rem; }
+  .card-body .reach-split-item strong { color: var(--fg) !important; }
+  .card-body .reach-bar         { background: var(--border) !important; }
+  .card-body .reach-bar-followers { background: var(--campus) !important; }
+
+  .account-header { padding: 4mm 6mm; border-bottom-width: 0.5px; }
+  .account-name { font-size: 0.75rem; }
+  .account-handle { font-size: 0.6rem; }
+  .account-cta { display: none; }
+  .campus-badge { width: 24px; height: 24px; border-radius: 5px; }
+  .campus-badge img { width: 14px; height: 14px; }
+
+  .site-footer { display: none; }
 }
 
 /* ── FOOTER ───────────────────────────────────────────────────────────────── */
@@ -674,7 +759,7 @@ main {
 
     <div class="report-eyebrow" id="tf-eyebrow">28-Day Performance · Oct 12 – Nov 8, 2026</div>
     <h1 class="report-title">November 2, 2026 – November 8, 2026</h1>
-    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 3:36 PM · 6 of 6 accounts</div>
+    <div class="report-period" id="hdr-period">Generated November 9, 2026 at 3:45 PM · 6 of 6 accounts</div>
 
     <div class="header-stats">
       <div class="header-stat">
@@ -811,6 +896,13 @@ main {
         </div>
         
         <div class="card-body">
+          <div class="card-collage-bg">
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
+          <div class="collage-panel" style="background-image:url('../assets/campus/collage_ca.jpg')"></div>
+        </div>
+        <div class="card-bg-gradient"></div>
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -821,7 +913,7 @@ main {
               <div class="metric-value" data-acct="@txcelebration" data-acct-metric="reach">200.3K</div>
               <div class="reach-split">
                 <span class="reach-split-item"><strong>9.6K</strong> followers</span>
-                <span class="reach-split-item"><strong>190.1K</strong> non-followers</span>
+                <span class="reach-split-item"><strong>190.7K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:5%"></div>
@@ -838,7 +930,7 @@ main {
             <div>
               <div class="metric-label">Net Followers</div>
               <div class="metric-value">+661</div>
-              <div class="metric-delta up">this period</div>
+              <div class="metric-delta up">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -846,13 +938,6 @@ main {
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          <div class="card-collage">
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_gt.jpg')"></div>
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_wave.jpg')"></div>
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_lt.jpg')"></div>
-          <div class="collage-panel" style="background-image:url('../assets/campus/collage_ca.jpg')"></div>
-          <div class="collage-overlay"></div>
-        </div>
         </div>
         
         <div class="top-post-wrap">
@@ -887,6 +972,8 @@ main {
         </div>
         
         <div class="card-body">
+          <div class="card-bg-image" style="background-image:url('../assets/campus/wave.jpg')"></div>
+        <div class="card-bg-gradient"></div>
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -897,7 +984,7 @@ main {
               <div class="metric-value" data-acct="@wave.students" data-acct-metric="reach">25.8K</div>
               <div class="reach-split">
                 <span class="reach-split-item"><strong>3.6K</strong> followers</span>
-                <span class="reach-split-item"><strong>22.7K</strong> non-followers</span>
+                <span class="reach-split-item"><strong>22.2K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:14%"></div>
@@ -914,7 +1001,7 @@ main {
             <div>
               <div class="metric-label">Net Followers</div>
               <div class="metric-value">+3</div>
-              <div class="metric-delta up">this period</div>
+              <div class="metric-delta up">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -922,7 +1009,6 @@ main {
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          <div class="card-image"><img src="../assets/campus/wave.jpg" alt="Wave Students" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -957,6 +1043,8 @@ main {
         </div>
         
         <div class="card-body">
+          <div class="card-bg-image" style="background-image:url('../assets/campus/georgetown.jpg')"></div>
+        <div class="card-bg-gradient"></div>
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -984,7 +1072,7 @@ main {
             <div>
               <div class="metric-label">Net Followers</div>
               <div class="metric-value">+87</div>
-              <div class="metric-delta up">this period</div>
+              <div class="metric-delta up">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -992,7 +1080,6 @@ main {
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          <div class="card-image"><img src="../assets/campus/georgetown.jpg" alt="Celebration Georgetown" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -1027,6 +1114,8 @@ main {
         </div>
         
         <div class="card-body">
+          <div class="card-bg-image" style="background-image:url('../assets/campus/leander.jpg')"></div>
+        <div class="card-bg-gradient"></div>
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -1037,7 +1126,7 @@ main {
               <div class="metric-value" data-acct="@celebration.leander" data-acct-metric="reach">6.6K</div>
               <div class="reach-split">
                 <span class="reach-split-item"><strong>912</strong> followers</span>
-                <span class="reach-split-item"><strong>5.8K</strong> non-followers</span>
+                <span class="reach-split-item"><strong>5.7K</strong> non-followers</span>
               </div>
               <div class="reach-bar">
                 <div class="reach-bar-followers" style="width:14%"></div>
@@ -1054,7 +1143,7 @@ main {
             <div>
               <div class="metric-label">Net Followers</div>
               <div class="metric-value">+15</div>
-              <div class="metric-delta up">this period</div>
+              <div class="metric-delta up">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -1062,7 +1151,6 @@ main {
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          <div class="card-image"><img src="../assets/campus/leander.jpg" alt="Celebration Leander" loading="lazy"></div>
         </div>
         
       </div>
@@ -1082,6 +1170,8 @@ main {
         </div>
         
         <div class="card-body">
+          <div class="card-bg-image" style="background-image:url('../assets/campus/centralaustin.jpg')"></div>
+        <div class="card-bg-gradient"></div>
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -1109,7 +1199,7 @@ main {
             <div>
               <div class="metric-label">Net Followers</div>
               <div class="metric-value">-1</div>
-              <div class="metric-delta down">this period</div>
+              <div class="metric-delta down">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -1117,7 +1207,6 @@ main {
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          <div class="card-image"><img src="../assets/campus/centralaustin.jpg" alt="Celebration Central Austin" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -1152,6 +1241,8 @@ main {
         </div>
         
         <div class="card-body">
+          <div class="card-bg-image" style="background-image:url('../assets/campus/laketravis.jpg')"></div>
+        <div class="card-bg-gradient"></div>
           <div class="account-metrics">
             <div>
               <div class="metric-label">Views</div>
@@ -1179,7 +1270,7 @@ main {
             <div>
               <div class="metric-label">Net Followers</div>
               <div class="metric-value">+10</div>
-              <div class="metric-delta up">this period</div>
+              <div class="metric-delta up">28-day period</div>
             </div>
             <div>
               <div class="metric-label">Content</div>
@@ -1187,7 +1278,6 @@ main {
               <div class="metric-sub">posts + stories</div>
             </div>
           </div>
-          <div class="card-image"><img src="../assets/campus/laketravis.jpg" alt="Celebration Lake Travis" loading="lazy"></div>
         </div>
         
         <div class="top-post-wrap">
@@ -1238,7 +1328,7 @@ function exportPDF() {
 }
 
 // ── Timeframe toggle ───────────────────────────────────────────────────────
-const tfData   = {"7": {"label": "Last 7 Days", "dateRange": "Nov 2 \u2013 Nov 8, 2026", "total_views": "305.8K", "total_engagement": "11.0K", "net_followers": "+775", "total_posts": "\u2014", "accounts": {"@txcelebration": {"views": "153.7K", "reach": "57.9K", "engagement": "6.5K", "eng_rate": "4.24%"}, "@wave.students": {"views": "78.0K", "reach": "22.9K", "engagement": "2.3K", "eng_rate": "2.97%"}, "@celebration.georgetown": {"views": "45.5K", "reach": "10.7K", "engagement": "1.8K", "eng_rate": "3.91%"}, "@celebration.leander": {"views": "9.0K", "reach": "2.9K", "engagement": "203", "eng_rate": "2.26%"}, "@celebration.centralaustin": {"views": "11.9K", "reach": "1.8K", "engagement": "138", "eng_rate": "1.16%"}, "@celebration.laketravis": {"views": "7.7K", "reach": "1.8K", "engagement": "95", "eng_rate": "1.23%"}}}, "28": {"label": "Last 28 Days", "dateRange": "Oct 12 \u2013 Nov 8, 2026", "total_views": "1.0M", "total_engagement": "44.4K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "555.3K", "reach": "200.3K", "engagement": "29.3K", "eng_rate": "5.28%"}, "@wave.students": {"views": "250.1K", "reach": "25.8K", "engagement": "7.8K", "eng_rate": "3.12%"}, "@celebration.georgetown": {"views": "110.4K", "reach": "11.5K", "engagement": "3.9K", "eng_rate": "3.53%"}, "@celebration.leander": {"views": "54.3K", "reach": "6.6K", "engagement": "1.7K", "eng_rate": "3.13%"}, "@celebration.centralaustin": {"views": "41.2K", "reach": "2.8K", "engagement": "746", "eng_rate": "1.81%"}, "@celebration.laketravis": {"views": "34.0K", "reach": "1.8K", "engagement": "924", "eng_rate": "2.72%"}}}, "90": {"label": "Last 90 Days", "dateRange": "Aug 11 \u2013 Nov 8, 2026", "total_views": "3.0M", "total_engagement": "107.7K", "net_followers": "\u2014", "total_posts": "\u2014", "accounts": {"@txcelebration": {"views": "1.4M", "reach": "274.5K", "engagement": "54.8K", "eng_rate": "3.91%"}, "@wave.students": {"views": "854.0K", "reach": "90.8K", "engagement": "27.7K", "eng_rate": "3.24%"}, "@celebration.georgetown": {"views": "254.9K", "reach": "20.6K", "engagement": "8.9K", "eng_rate": "3.49%"}, "@celebration.leander": {"views": "192.1K", "reach": "13.6K", "engagement": "6.3K", "eng_rate": "3.28%"}, "@celebration.centralaustin": {"views": "173.5K", "reach": "7.8K", "engagement": "4.7K", "eng_rate": "2.71%"}, "@celebration.laketravis": {"views": "165.2K", "reach": "5.8K", "engagement": "5.3K", "eng_rate": "3.21%"}}}};
+const tfData   = {"7": {"label": "Last 7 Days", "dateRange": "Nov 2 \u2013 Nov 8, 2026", "total_views": "305.8K", "total_engagement": "11.0K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "153.7K", "reach": "57.9K", "engagement": "6.5K", "eng_rate": "4.24%"}, "@wave.students": {"views": "78.0K", "reach": "22.9K", "engagement": "2.3K", "eng_rate": "2.97%"}, "@celebration.georgetown": {"views": "45.5K", "reach": "10.7K", "engagement": "1.8K", "eng_rate": "3.91%"}, "@celebration.leander": {"views": "9.0K", "reach": "2.9K", "engagement": "203", "eng_rate": "2.26%"}, "@celebration.centralaustin": {"views": "11.9K", "reach": "1.8K", "engagement": "138", "eng_rate": "1.16%"}, "@celebration.laketravis": {"views": "7.7K", "reach": "1.8K", "engagement": "95", "eng_rate": "1.23%"}}}, "28": {"label": "Last 28 Days", "dateRange": "Oct 12 \u2013 Nov 8, 2026", "total_views": "1.0M", "total_engagement": "44.4K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "555.3K", "reach": "200.3K", "engagement": "29.3K", "eng_rate": "5.28%"}, "@wave.students": {"views": "250.1K", "reach": "25.8K", "engagement": "7.8K", "eng_rate": "3.12%"}, "@celebration.georgetown": {"views": "110.4K", "reach": "11.5K", "engagement": "3.9K", "eng_rate": "3.53%"}, "@celebration.leander": {"views": "54.3K", "reach": "6.6K", "engagement": "1.7K", "eng_rate": "3.13%"}, "@celebration.centralaustin": {"views": "41.2K", "reach": "2.8K", "engagement": "746", "eng_rate": "1.81%"}, "@celebration.laketravis": {"views": "34.0K", "reach": "1.8K", "engagement": "924", "eng_rate": "2.72%"}}}, "90": {"label": "Last 90 Days", "dateRange": "Aug 11 \u2013 Nov 8, 2026", "total_views": "3.0M", "total_engagement": "107.7K", "net_followers": "+775", "total_posts": "114", "accounts": {"@txcelebration": {"views": "1.4M", "reach": "274.5K", "engagement": "54.8K", "eng_rate": "3.91%"}, "@wave.students": {"views": "854.0K", "reach": "90.8K", "engagement": "27.7K", "eng_rate": "3.24%"}, "@celebration.georgetown": {"views": "254.9K", "reach": "20.6K", "engagement": "8.9K", "eng_rate": "3.49%"}, "@celebration.leander": {"views": "192.1K", "reach": "13.6K", "engagement": "6.3K", "eng_rate": "3.28%"}, "@celebration.centralaustin": {"views": "173.5K", "reach": "7.8K", "engagement": "4.7K", "eng_rate": "2.71%"}, "@celebration.laketravis": {"views": "165.2K", "reach": "5.8K", "engagement": "5.3K", "eng_rate": "3.21%"}}}};
 const eyebrow  = document.getElementById('tf-eyebrow');
 
 document.querySelectorAll('.tf-btn').forEach(btn => {
